@@ -23,8 +23,32 @@ int identify2 (char *name, int size){
 	return 0;
 }
 
+int createFileHandle () {
+	
+	currentFileHandle++;
+	return currentFileHandle;
+}
 
-FILE2 create2 (char *filename);
+FILE2 create2 (char *filename) {
+
+	File_descriptor *fileDescr = malloc(sizeof(File_descriptor));
+	fileDescr->currentPointer = 0; //?
+	fileDescr->fileHandle = createFileHandle();
+	fileDescr->name = filename;
+	t2fs_record registroDir = malloc(sizeof(t2fs_record));
+	registroDir->TypeVal = 0x01;
+	registroDir->name = filename;
+	registroDir->bytesFileSize = 0; //?
+	registroDir->firstCluster = 0; //?
+
+	DIRENT2 entradaDir = malloc(sizeof(DIRENT2));
+	entradaDir->name = filename;
+	entradaDir->bytesFileSize = 0; //?
+
+	
+	fileDescr->registroDiretorio = registroDir; //?
+	fileDescr->entradaDiretorio = entradaDir; //?
+}
 
 int delete2 (char *filename);
 
