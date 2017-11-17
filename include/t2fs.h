@@ -21,7 +21,7 @@ typedef unsigned int DWORD;
 #pragma pack(push, 1)
 
 /** Superbloco */
-struct t2fs_superbloco {		// Tabela 1 � Descri��o dos campos do bloco de boot
+typedef struct t2fs_superbloco {		// Tabela 1 � Descri��o dos campos do bloco de boot
 	char    id[4];			// �T2FS�	Identifica��o do sistema de arquivo.
 	WORD    version;		// Vers�o atual desse sistema de arquivos Valor fixo 0x7E12 (0x7E1=2017; 2=2� semestre)
 	WORD	SuperBlockSize;		// Quantidade de setores l�gicos que formam o superbloco.
@@ -31,7 +31,7 @@ struct t2fs_superbloco {		// Tabela 1 � Descri��o dos campos do bloco de b
 	DWORD	pFATSectorStart;	// N�mero do setor l�gico onde a FAT inicia.
 	DWORD	RootDirCluster;		// Cluster onde inicia o arquivo correspondente ao diret�rio raiz
 	DWORD	DataSectorStart;	// Primeiro setor l�gico da �rea de blocos de dados (cluster).
-};
+} SUPERBLOCO;
 
 /*OUR STRUCTURE*/
 typedef struct file_fd {
@@ -44,7 +44,7 @@ typedef struct file_fd {
 
 } File_descriptor;
 
-/*OUR STRUCTURE*/
+/*END OUR STRUCTURE*/
 
 /** Registro de diret�rio (entrada de diret�rio) */
 struct t2fs_record {

@@ -4,23 +4,23 @@
 #include "../include/t2fs.h"
 #include "../include/apidisk.h"
 /*includes extras*/
+#include "auxFunctions.h"
 #include "string.h"
+
 
 /*SETUP*/
 
 #define MAX_OPEN_FILES 10
 
 /*OUR CONTROL STRUCTURES*/
-struct t2fs_superbloco *superbloco; // I have no idea how we will use it
+SUPERBLOCO partitionInfo;
 
-File_descriptor *TDAA; //Tabela de descritores de arquivos abertos
+//File_descriptor *TDAA; //Tabela de descritores de arquivos abertos
 
 //TAAP //TAbela de descritores de arquivos por processo
 
-NumberOpenFiles = 0;
-
-//future trash
-//int currentFileHandle = -1;
+//int numberOpenFiles = 0;
+bool partitionInfoInitialized = false;
 
 int identify2(char *name, int size){
 	int length = 30;
@@ -37,11 +37,6 @@ int identify2(char *name, int size){
 	  }
 	return 0;
 }
-
-/*int createFileHandle(){
-	currentFileHandle++;
-	return currentFileHandle;
-}*/
 
 FILE2 create2 (char *filename) {
 	//what we need to create a file?
