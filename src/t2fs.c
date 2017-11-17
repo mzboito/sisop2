@@ -4,7 +4,7 @@
 #include "../include/t2fs.h"
 #include "../include/apidisk.h"
 /*includes extras*/
-#include "auxFunctions.h"
+#include "../include/auxFunctions.h"
 #include "string.h"
 
 
@@ -13,15 +13,18 @@
 #define MAX_OPEN_FILES 10
 
 /*OUR CONTROL STRUCTURES*/
-SUPERBLOCO partitionInfo;
 
 //File_descriptor *TDAA; //Tabela de descritores de arquivos abertos
-
 //TAAP //TAbela de descritores de arquivos por processo
+//int numberOpenFiles = 10;
 
-//int numberOpenFiles = 0;
-bool partitionInfoInitialized = false;
+int partitionInfoInitialized = -1;
 
+/*HEADERS FOR EXTRA FUNCTIONS*/
+int superBlock_init();
+
+
+/*START IMPLEMENTATION*/
 int identify2(char *name, int size){
 	int length = 30;
 	  if(size < length){
@@ -42,9 +45,9 @@ FILE2 create2 (char *filename) {
 	//what we need to create a file?
 
 	//we need space for its name
-	char name = malloc(sizeof(char)*MAX_FILE_NAME_SIZE);
+	/*char name = malloc(sizeof(char)*MAX_FILE_NAME_SIZE);
 	strcopy(name, filename);
-	printf("string: %s,  original: %s\n", name, filename);
+	printf("string: %s,  original: %s\n", name, filename);*/
 
 
 	/*File_descriptor *fileDescr = malloc(sizeof(File_descriptor));
@@ -82,3 +85,16 @@ int getcwd2 (char *pathname,int size);
 DIR2 opendir2 (char *pathname);
 int readdir2 (DIR2 handle,DIRENT2 *dentry);
 int closedir2 (DIR2 handle);
+
+
+/*EXTRA FUNCTIONS*/
+int superBlock_init(){ //this function tests if the superblock is already initialized
+	if(partitionInfoInitialized < 0){ //if it was not yet read
+		if(readSuperBlock() != 0){ //if tries to read and fails
+			return -1; //problem reading the superblock
+		}
+		partitionInfoInitialized = 0;
+		return 0; //the superblock is now ready
+	}
+	return 0; //no need to read it, it is already in memory
+}
