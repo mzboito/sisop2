@@ -4,7 +4,7 @@
 #include "../include/apidisk.h"
 #include "../include/auxFunctions.h"
 
-int partitionInfoInitialized = -1;
+//partitionInfoInitialized = -1;
 
 int readSuperBlock(){ //this function reads the superblock to get the info we need for all the rest!
   partitionInfo = (SUPERBLOCO *) malloc(SECTOR_SIZE);//we need to malloc space for partitionInfo
