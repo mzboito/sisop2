@@ -4,7 +4,9 @@
 #include "../include/apidisk.h"
 #include "../include/auxFunctions.h"
 
-//partitionInfoInitialized = -1;
+SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
+DWORD *FAT; //ponteiro para a FAT
+int partitionInfoInitialized = -1;
 
 int readSuperBlock(){ //this function reads the superblock to get the info we need for all the rest!
   partitionInfo = (SUPERBLOCO *) malloc(SECTOR_SIZE);//we need to malloc space for partitionInfo

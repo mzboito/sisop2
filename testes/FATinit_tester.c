@@ -8,6 +8,7 @@
 #include "string.h"
 
 int main() {
-  printf("ok, I work");
+  printf("ok, I work\n");
+  printf("Return superblock: %d\n", readSuperBlock());
   return 0;
 }

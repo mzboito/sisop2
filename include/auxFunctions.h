@@ -7,15 +7,15 @@
 //#include "apidisk.h"
 
 /*OUR CONTROL VARIABLES*/
-SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
-DWORD *FAT; //ponteiro para a FAT
+extern SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
+extern DWORD *FAT; //ponteiro para a FAT
+extern int partitionInfoInitialized;
 
 #define ERROR_FAT 0xFFFFFFFE
 #define EOF_FAT 0xFFFFFFFF
 
 #define MAX_OPEN_FILES 10
 
-extern int partitionInfoInitialized;
 
 int readSuperBlock();
 int initializeFAT();
