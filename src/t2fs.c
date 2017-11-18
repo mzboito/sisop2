@@ -85,14 +85,3 @@ int readdir2 (DIR2 handle,DIRENT2 *dentry);
 int closedir2 (DIR2 handle);
 
 
-/*EXTRA FUNCTIONS*/
-int superBlock_init(){ //this function tests if the superblock is already initialized
-	if(partitionInfoInitialized < 0){ //if it was not yet read
-		if(readSuperBlock() != 0){ //if tries to read and fails
-			return -1; //problem reading the superblock
-		}
-		partitionInfoInitialized = 0;
-		return 0; //the superblock is now ready
-	}
-	return 0; //no need to read it, it is already in memory
-}

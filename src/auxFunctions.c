@@ -1,12 +1,25 @@
 
 /*** ARQUIVO DE FUNCOES AUXILIARES PARA A IMPLEMENTACAO DA BIBLITOECA T2FS ***/
 #include <stdlib.h>
+#include "stdio.h"
 #include "../include/apidisk.h"
 #include "../include/auxFunctions.h"
 
 SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 DWORD *FAT; //ponteiro para a FAT
 int partitionInfoInitialized = -1;
+
+/*EXTRA FUNCTIONS*/
+int superBlock_init(){ //this function tests if the superblock is already initialized
+	if(partitionInfoInitialized < 0){ //if it was not yet read
+		if(readSuperBlock() != 0){ //if tries to read and fails
+			return -1; //problem reading the superblock
+		}
+		partitionInfoInitialized = 0;
+		return 0; //the superblock is now ready
+	}
+	return 0; //no need to read it, it is already in memory
+}
 
 int readSuperBlock(){ //this function reads the superblock to get the info we need for all the rest!
   partitionInfo = (SUPERBLOCO *) malloc(SECTOR_SIZE);//we need to malloc space for partitionInfo

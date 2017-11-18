@@ -9,6 +9,8 @@
 
 int main() {
   printf("ok, I work\n");
+  printf("Block init: %d\n", superBlock_init());
   printf("Return superblock: %d\n", readSuperBlock());
+  printf("Return FAT: %d\n",initializeFAT());
   return 0;
 }
