@@ -8,17 +8,11 @@
 #include "string.h"
 
 
-/*SETUP*/
-
-#define MAX_OPEN_FILES 10
-
 /*OUR CONTROL STRUCTURES*/
 
 //File_descriptor *TDAA; //Tabela de descritores de arquivos abertos
 //TAAP //TAbela de descritores de arquivos por processo
 //int numberOpenFiles = 10;
-
-int partitionInfoInitialized = -1;
 
 /*HEADERS FOR EXTRA FUNCTIONS*/
 int superBlock_init();
@@ -42,7 +36,11 @@ int identify2(char *name, int size){
 }
 
 FILE2 create2 (char *filename) {
-	//what we need to create a file?
+	if(superBlock_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+
+
 
 	//we need space for its name
 	/*char name = malloc(sizeof(char)*MAX_FILE_NAME_SIZE);

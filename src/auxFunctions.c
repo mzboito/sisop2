@@ -1,7 +1,6 @@
 
 /*** ARQUIVO DE FUNCOES AUXILIARES PARA A IMPLEMENTACAO DA BIBLITOECA T2FS ***/
 #include <stdlib.h>
-#include "../include/t2fs.h"
 #include "../include/apidisk.h"
 #include "../include/auxFunctions.h"
 
@@ -14,4 +13,15 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
     }
   //at this point partitionInfo has information inside! :)
   return 0; //we are good to go
+}
+
+int initializeFAT(){
+  //first we need the FAT total size
+  if(partitionInfoInitialized < 0){
+    return -1;
+  }
+  DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
+  printf("%d", totalSize);
+
+  return 0;
 }
