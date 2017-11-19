@@ -50,11 +50,19 @@ int initializeFAT(){
 
 	FAT = (DWORD *)malloc(SECTOR_SIZE * totalSize);
 
-	initialPoint = FAT;
+	// sector size = 256 bytes
+	// FAT entry = 4 bytes
+	int entriesPerSector = SECTOR_SIZE/sizeof(DWORD);
+	printf("entries per sector: %d\n", entriesPerSector);
+
+	DWORD *initialPoint = FAT;
 	while(initial < final){
 			read_sector(initial,(char*)FAT);
-			initial = initial + sizeof(DWORD);
+			initial = initial + 1;
+
+			FAT = FAT + entriesPerSector;//sizeof(DWORD);
 	}
+	FAT = initialPoint;
   return 0;
 }
 
@@ -77,7 +85,14 @@ void debugStructures(){
       printf("\n\n Now printing the retrieved information from FAT\n\n");
       DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
       printf("FAT length: %d\n", totalSize);
-			//printf("FAT first: $d\n", &FAT);
+			int i = 0;
+			while(i < 15){
+						printf("What is inside the %dth FAT sector: %d\n", i, FAT[i]);
+						i++;
+			}
+			printf("FREE_FAT %d\n", FREE_FAT);
+			printf("ERROR_FAT %d\n", ERROR_FAT);
+			printf("EOF_FAT %d\n", EOF_FAT);
     }
   }
 }

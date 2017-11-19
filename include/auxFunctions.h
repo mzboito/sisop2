@@ -13,6 +13,7 @@ extern int partitionInfoInitialized;
 
 #define ERROR_FAT 0xFFFFFFFE
 #define EOF_FAT 0xFFFFFFFF
+#define FREE_FAT 0x00000000  
 
 #define MAX_OPEN_FILES 10
 
