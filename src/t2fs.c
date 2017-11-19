@@ -34,7 +34,7 @@ int identify2(char *name, int size){
 }
 
 FILE2 create2 (char *filename) {
-	if(superBlock_init()!= 0){ //first we need to test if the superblock was initialized
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
 		return -1; //if problem to initialize, then ERROR
 	}
 

@@ -10,13 +10,18 @@ DWORD *FAT; //ponteiro para a FAT
 int partitionInfoInitialized = -1;
 
 /*EXTRA FUNCTIONS*/
-int superBlock_init(){ //this function tests if the superblock is already initialized
+int structures_init(){ //this function tests if the superblock and fat were already initialized
 	if(partitionInfoInitialized < 0){ //if it was not yet read
 		if(readSuperBlock() != 0){ //if tries to read and fails
 			return -1; //problem reading the superblock
 		}
 		partitionInfoInitialized = 0;
-		return 0; //the superblock is now ready
+		//time to initialize the FAT
+		if(initializeFAT() != 0){
+			printf("FAT PROBLEM\n");
+			return -1; //problem creating the FAT
+		}
+		return 0;//initializeFAT(); //the superblock and FAT are now ready
 	}
 	return 0; //no need to read it, it is already in memory
 }
@@ -35,17 +40,28 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
 int initializeFAT(){
   //first we need the FAT total size
   if(partitionInfoInitialized < 0){
+		printf("wtf\n");
     return -1;
   }
-  DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
-  //printf("FAT length: %d\n", totalSize);
 
+	DWORD initial = partitionInfo->pFATSectorStart;
+	DWORD final = partitionInfo->DataSectorStart;
+  DWORD totalSize = final - initial;
+
+	FAT = (DWORD *)malloc(SECTOR_SIZE * totalSize);
+
+	initialPoint = FAT;
+	while(initial < final){
+			read_sector(initial,(char*)FAT);
+			initial = initial + sizeof(DWORD);
+	}
   return 0;
 }
 
 void debugStructures(){
-  printf("Return superBlock_init: %d\n", superBlock_init());
-  if(superBlock_init() == 0){
+	structures_init();
+  printf("Return superBlock_init: %d\n", readSuperBlock());
+  if(readSuperBlock() == 0){
     printf("\n\n Now printing the retrieved information from superblock\n\n");
     printf("id: %s\n", partitionInfo->id);
     printf("version: %d\n", partitionInfo->version);
@@ -61,6 +77,7 @@ void debugStructures(){
       printf("\n\n Now printing the retrieved information from FAT\n\n");
       DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
       printf("FAT length: %d\n", totalSize);
+			//printf("FAT first: $d\n", &FAT);
     }
   }
 }
