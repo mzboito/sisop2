@@ -15,8 +15,6 @@
 //int numberOpenFiles = 10;
 
 /*HEADERS FOR EXTRA FUNCTIONS*/
-int superBlock_init();
-
 
 /*START IMPLEMENTATION*/
 int identify2(char *name, int size){
@@ -83,5 +81,3 @@ int getcwd2 (char *pathname,int size);
 DIR2 opendir2 (char *pathname);
 int readdir2 (DIR2 handle,DIRENT2 *dentry);
 int closedir2 (DIR2 handle);
-
-

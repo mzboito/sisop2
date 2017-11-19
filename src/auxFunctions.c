@@ -38,7 +38,29 @@ int initializeFAT(){
     return -1;
   }
   DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
-  printf("%d", totalSize);
+  //printf("FAT length: %d\n", totalSize);
 
   return 0;
+}
+
+void debugStructures(){
+  printf("Return superBlock_init: %d\n", superBlock_init());
+  if(superBlock_init() == 0){
+    printf("\n\n Now printing the retrieved information from superblock\n\n");
+    printf("id: %s\n", partitionInfo->id);
+    printf("version: %d\n", partitionInfo->version);
+    printf("Superblock size: %d\n", partitionInfo->SuperBlockSize);
+    printf("Disk size: %d\n", partitionInfo->DiskSize);
+    printf("Number of sectors: %d\n", partitionInfo->NofSectors);
+    printf("Sectors per cluster: %d\n", partitionInfo->SectorsPerCluster);
+    printf("Fat sector start: %d\n", partitionInfo->pFATSectorStart);
+    printf("Root directory start: %d\n", partitionInfo->RootDirCluster);
+    printf("Data sector start: %d\n", partitionInfo->DataSectorStart);
+    printf("\n\nReturn initializeFAT: %d\n", initializeFAT());
+    if(initializeFAT() == 0){
+      printf("\n\n Now printing the retrieved information from FAT\n\n");
+      DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
+      printf("FAT length: %d\n", totalSize);
+    }
+  }
 }

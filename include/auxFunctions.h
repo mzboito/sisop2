@@ -16,8 +16,9 @@ extern int partitionInfoInitialized;
 
 #define MAX_OPEN_FILES 10
 
-
+int structures_init();
 int readSuperBlock();
 int initializeFAT();
+void debugStructures();
 
 #endif
