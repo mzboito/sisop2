@@ -6,7 +6,8 @@
 #include "../include/auxFunctions.h"
 
 SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
-DWORD *FAT; //ponteiro para a FAT
+DWORD *FAT; //lista da FAT
+DIRENT2 *ROOT; //lista do diretorio raiz
 int partitionInfoInitialized = -1;
 
 /*EXTRA FUNCTIONS*/
@@ -33,6 +34,7 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
   if(flag != 0){ //if there was something wrong with the reading
     return -1; // :(
     }
+	//sectorsPerCluster = partitionInfo->SectorsPerCluster; //save the clusters size
   //at this point partitionInfo has information inside! :)
   return 0; //we are good to go
 }
@@ -40,7 +42,6 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
 int initializeFAT(){
   //first we need the FAT total size
   if(partitionInfoInitialized < 0){
-		printf("wtf\n");
     return -1;
   }
 
@@ -53,7 +54,7 @@ int initializeFAT(){
 	// sector size = 256 bytes
 	// FAT entry = 4 bytes
 	int entriesPerSector = SECTOR_SIZE/sizeof(DWORD);
-	printf("entries per sector: %d\n", entriesPerSector);
+	//printf("entries per sector: %d\n", entriesPerSector);
 
 	DWORD *initialPoint = FAT;
 	while(initial < final){
@@ -64,6 +65,54 @@ int initializeFAT(){
 	}
 	FAT = initialPoint;
   return 0;
+}
+
+int initializeRoot(){
+	//the root directory uses only ONE cluster
+	ROOT = (DIRENT2 *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
+	read_cluster(partitionInfo->RootDirCluster, ROOT);
+	int i = 0;
+	while(i <= 6){
+		printf("name %s\n", ROOT[i].name);
+		printf("fileType %x\n", ROOT[i].fileType);
+		printf("fileSize %08x\n", ROOT[i].fileSize);
+		if(ROOT[i].fileType == TYPEVAL_REGULAR)
+			printf("valid\n");
+		i++;
+	}
+	/*
+	typedef struct {
+	    char    name[MAX_FILE_NAME_SIZE+1]; /* Nome do arquivo cuja entrada foi lida do disco
+	    BYTE    fileType;                   /* Tipo do arquivo: regular (0x01) ou diret�rio (0x02)
+	    DWORD   fileSize;                   /* Numero de bytes do arquivo
+	} DIRENT2; */
+	return 0;
+}
+
+int read_cluster(DWORD data_cluster, BYTE *buffer){ //DWORD = unsigned int, BYTE = unsigned char
+	//this function iterates to read a whole cluster, instead of only a sector
+	DWORD firstSector = cluster2sector(data_cluster);
+	DWORD lastSector = firstSector + partitionInfo->SectorsPerCluster;
+	while(firstSector < lastSector){
+		if(read_sector(firstSector, buffer) != 0){
+			return -1; //error reading
+		}
+		buffer = buffer + SECTOR_SIZE; //iterar o buffer
+		firstSector = firstSector + 1; //go to the next sector
+	}
+	return 0;
+}
+
+int write_cluster(DWORD data_cluster, BYTE *buffer){
+	//this function iterates to write a whole cluster, instead of only a sector
+	return -1;
+}
+
+DWORD cluster2sector(DWORD data_cluster){
+	DWORD initialDataSector = partitionInfo->DataSectorStart;
+	DWORD displacement = partitionInfo->SectorsPerCluster * data_cluster;
+	DWORD firstSector = initialDataSector + displacement;
+	return firstSector;
 }
 
 void debugStructures(){
@@ -86,13 +135,16 @@ void debugStructures(){
       DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
       printf("FAT length: %d\n", totalSize);
 			int i = 0;
-			while(i < 128){
-						printf("What is inside the %dth FAT sector: %08x\n", i, FAT[i]);
+			while(i < totalSize){
+						printf("%dth FAT sector: %08x\n", i, FAT[i]);
 						i++;
 			}
 			printf("FREE_FAT %08x\n", FREE_FAT);
 			printf("ERROR_FAT %08x\n", ERROR_FAT);
 			printf("EOF_FAT %08x\n", EOF_FAT);
     }
+		if(initializeRoot() != 0){
+			printf("problem with root directory\n");
+		}
   }
 }
