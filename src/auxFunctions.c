@@ -86,13 +86,13 @@ void debugStructures(){
       DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
       printf("FAT length: %d\n", totalSize);
 			int i = 0;
-			while(i < 15){
-						printf("What is inside the %dth FAT sector: %d\n", i, FAT[i]);
+			while(i < 128){
+						printf("What is inside the %dth FAT sector: %08x\n", i, FAT[i]);
 						i++;
 			}
-			printf("FREE_FAT %d\n", FREE_FAT);
-			printf("ERROR_FAT %d\n", ERROR_FAT);
-			printf("EOF_FAT %d\n", EOF_FAT);
+			printf("FREE_FAT %08x\n", FREE_FAT);
+			printf("ERROR_FAT %08x\n", ERROR_FAT);
+			printf("EOF_FAT %08x\n", EOF_FAT);
     }
   }
 }
