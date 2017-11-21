@@ -8,6 +8,7 @@
 SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 DWORD *FAT; //lista da FAT
 struct t2fs_record *ROOT; //lista do diretorio raiz
+DWORD FATtotalSize;
 int partitionInfoInitialized = -1;
 
 /*EXTRA FUNCTIONS*/
@@ -19,10 +20,13 @@ int structures_init(){ //this function tests if the superblock and fat were alre
 		partitionInfoInitialized = 0;
 		//time to initialize the FAT
 		if(initializeFAT() != 0){
-			printf("FAT PROBLEM\n");
+			//printf("FAT PROBLEM\n");
 			return -1; //problem creating the FAT
 		}
-		return 0;//initializeFAT(); //the superblock and FAT are now ready
+		if(initializeRoot() != 0){
+			return -1;
+		}
+		return 0;//initializeFAT(); //the superblock, FAT and ROOT are now ready
 	}
 	return 0; //no need to read it, it is already in memory
 }
@@ -34,7 +38,6 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
   if(flag != 0){ //if there was something wrong with the reading
     return -1; // :(
     }
-	//sectorsPerCluster = partitionInfo->SectorsPerCluster; //save the clusters size
   //at this point partitionInfo has information inside! :)
   return 0; //we are good to go
 }
@@ -45,88 +48,56 @@ int initializeFAT(){
   }
 	DWORD initial = partitionInfo->pFATSectorStart;
 	DWORD final = partitionInfo->DataSectorStart;
-  DWORD totalSize = final - initial;
-
+  FATtotalSize = final - initial;
 	FAT = (DWORD *)malloc(SECTOR_SIZE * totalSize);
-
 	// sector size = 256 bytes
 	// FAT entry = 4 bytes
 	int entriesPerSector = SECTOR_SIZE/sizeof(DWORD);
-	//printf("entries per sector: %d\n", entriesPerSector);
-
 	DWORD *initialPoint = FAT;
 	while(initial < final){
 			read_sector(initial,(char*)FAT);
 			initial = initial + 1;
 
-			FAT = FAT + entriesPerSector;//sizeof(DWORD);
+			FAT = FAT + entriesPerSector;
 	}
 	FAT = initialPoint;
   return 0;
 }
 
-//encontrar cluster livre
-
-DWORD findFreeCluster () {
-
+DWORD findFreeCluster(){//encontrar cluster livre
   DWORD i = 0;
-  int sector = 0;
-  while (i < FATtotalSize) {
-
-	
-	printf("FAT sector %d %08x Cluster value: %08x\n ",sector,i, FAT[i]);
-	
-	if (FAT[i] == FREE_FAT) {
-	   printf("Find Free cluster value: %08x\n",FAT[i]);
-	 
-	   return i;
-	}
-	i++;
-	sector++;
+  while(i < FATtotalSize){
+		//printf("FAT sector %d %08x Cluster value: %08x\n ",sector,i, FAT[i]);
+		if (FAT[i] == FREE_FAT){ //found a free cluster
+		   //printf("Find Free cluster value: %08x\n",FAT[i]);
+		   return i;
+		}
+		i++;
   }
   return ERROR_FAT;
-
 }
 
-//marcar um cluster como ocupado na FAT
-
-DWORD markCluster () {
-
-  DWORD i = 0;
-  while (i < FATtotalSize) {
-	
-	if ( FAT[i] != ERROR_FAT && FAT[i] != EOF_FAT && FAT[i] != FREE_FAT) {
-	    
-	    FAT[i] = EOF_FAT;
-	  //  printf("Cluster: %08x\n",i);
-	    printf("Mark Cluster value: %08x\n",FAT[i]);
-	    return i;
-	    
+DWORD set_cluster(DWORD i){ //marcar um cluster como ocupado na FAT
+	if(FAT[i] != FREE_FAT){
+		return ERROR_FAT;
 	}
-	i++;
-  }
-  return ERROR_FAT;
-	
+	FAT[i] = EOF_FAT;
+  return FREE_FAT;
 }
 
-//liberar um cluster ocupado na FAT
-
-DWORD freeCluster () {
-
-  DWORD i = 0;
-  while (i < FATtotalSize) {
-	
-	if ( FAT[i] != ERROR_FAT && FAT[i] != FREE_FAT || FAT[i] == EOF_FAT ) {
-	    
-	    FAT[i] = FREE_FAT;
-	    printf("Free Cluster value: %08x\n",FAT[i]);
-	    return i;
-	    
+DWORD free_cluster(DWORD i){ //liberar um cluster ocupado na FAT
+	if (FAT[i] == ERROR_FAT){ //cannot free an error entry
+		return ERROR_FAT;
 	}
-	i++;
-  }
-  return ERROR_FAT;
-
+	if(FAT[i] == FREE_FAT){ //cannot free a free fat
+		return ERROR_FAT;
+	}
+	if(FAT[i] != EOF_FAT){
+		//if it is not the last file cluster and we free it, we will destroy the file clusters list
+		return ERROR_FAT;
+	}
+	FAT[i] = FREE_FAT;
+	return FREE_FAT; //return 0;
 }
 
 int initializeRoot(){

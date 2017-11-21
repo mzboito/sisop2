@@ -11,6 +11,7 @@ extern SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 extern DWORD *FAT; //ponteiro para a FAT
 extern struct t2fs_record *ROOT;
 extern int partitionInfoInitialized;
+extern DWORD FATtotalSize;
 
 #define ERROR_FAT 0xFFFFFFFE
 #define EOF_FAT 0xFFFFFFFF
@@ -26,5 +27,6 @@ int read_cluster();
 int write_cluster();
 DWORD cluster2sector();
 void debugStructures();
+
 
 #endif
