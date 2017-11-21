@@ -40,11 +40,9 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
 }
 
 int initializeFAT(){
-  //first we need the FAT total size
   if(partitionInfoInitialized < 0){
     return -1;
   }
-
 	DWORD initial = partitionInfo->pFATSectorStart;
 	DWORD final = partitionInfo->DataSectorStart;
   DWORD totalSize = final - initial;
@@ -68,6 +66,9 @@ int initializeFAT(){
 }
 
 int initializeRoot(){
+	if(partitionInfoInitialized < 0){
+    return -1;
+  }
 	//the root directory uses only ONE cluster
 	ROOT = (struct t2fs_record *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
 	if(read_cluster(partitionInfo->RootDirCluster, (char *) ROOT) != 0){
@@ -84,7 +85,7 @@ int read_cluster(DWORD data_cluster, BYTE *buffer){ //DWORD = unsigned int, BYTE
 		if(read_sector(firstSector, buffer) != 0){
 			return -1; //error reading
 		}
-		buffer = buffer + SECTOR_SIZE;//(SECTOR_SIZE/sizeof(BYTE)); //iterar o buffer
+		buffer = buffer + SECTOR_SIZE;//iterar o buffer
 		firstSector = firstSector + 1; //go to the next sector
 	}
 	return 0;
