@@ -27,6 +27,9 @@ int read_cluster();
 int write_cluster();
 DWORD cluster2sector();
 void debugStructures();
+DWORD findFreeCluster();
+DWORD set_cluster(DWORD i);
+DWORD free_cluster(DWORD i);
 
 
 #endif

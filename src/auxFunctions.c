@@ -49,7 +49,7 @@ int initializeFAT(){
 	DWORD initial = partitionInfo->pFATSectorStart;
 	DWORD final = partitionInfo->DataSectorStart;
   FATtotalSize = final - initial;
-	FAT = (DWORD *)malloc(SECTOR_SIZE * totalSize);
+	FAT = (DWORD *)malloc(SECTOR_SIZE * FATtotalSize);
 	// sector size = 256 bytes
 	// FAT entry = 4 bytes
 	int entriesPerSector = SECTOR_SIZE/sizeof(DWORD);
@@ -126,7 +126,7 @@ int read_cluster(DWORD data_cluster, BYTE *buffer){ //DWORD = unsigned int, BYTE
 	return 0;
 }
 
-int write_cluster(DWORD data_cluster, BYTE *buffer){
+int write_cluster(DWORD data_cluster, BYTE *buffer){ //TODO this function
 	//this function iterates to write a whole cluster, instead of only a sector
 	return -1;
 }
@@ -155,10 +155,10 @@ void debugStructures(){
     printf("\n\nReturn initializeFAT: %d\n", initializeFAT());
     if(initializeFAT() == 0){
       printf("\n\n Now printing the retrieved information from FAT\n\n");
-      DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
-      printf("FAT length: %d\n", totalSize);
+      //DWORD totalSize = partitionInfo->DataSectorStart - partitionInfo->pFATSectorStart;
+      printf("FAT length: %d\n", FATtotalSize);
 			int i = 0;
-			while(i < totalSize){
+			while(i < FATtotalSize){
 						printf("%dth FAT sector: %08x\n", i, FAT[i]);
 						i++;
 			}
