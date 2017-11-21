@@ -37,8 +37,37 @@ FILE2 create2 (char *filename) {
 	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
 		return -1; //if problem to initialize, then ERROR
 	}
+	if(nOpenFiles == MAX_OPEN_FILES){
+		return -1; //we do not have space for another open file
+	}
+
+	//desmembrar o nome para descobrir nome, tipo de path, path
 
 
+	//testar se já existe alguém no diretório pedido com o mesmo nome -> se sim, erro
+
+	//catar um cluster da fat -> se full fat, erro
+
+	//alocar cluster da fat
+
+	//cria uma entrada no diretorio -> se não tem espaço mais pra entradas, erro
+
+	//fazer uma estrutura de arquivo aberto com current pointer e colocá-lo em zero
+
+	//retornar o handler criado
+
+
+	/*Fun��o: Criar um novo arquivo.
+		O nome desse novo arquivo � aquele informado pelo par�metro "filename".
+		O contador de posi��o do arquivo (current pointer) deve ser colocado na posi��o zero.
+		Caso j� exista um arquivo ou diret�rio com o mesmo nome, a fun��o dever� retornar um erro de cria��o.
+		A fun��o deve retornar o identificador (handle) do arquivo.
+		Esse handle ser� usado em chamadas posteriores do sistema de arquivo para fins de manipula��o do arquivo criado.
+
+	Entra:	filename -> path absoluto para o arquivo a ser criado. Todo o "path" deve existir.
+
+	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o handle do arquivo (n�mero positivo).
+		Em caso de erro, deve ser retornado um valor negativo.*/
 
 	//we need space for its name
 	/*char name = malloc(sizeof(char)*MAX_FILE_NAME_SIZE);

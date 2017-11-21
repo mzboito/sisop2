@@ -84,8 +84,6 @@ Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna "0" (
 -----------------------------------------------------------------------------*/
 int identify2 (char *name, int size);
 
-
-int createFileHandle();
 /*-----------------------------------------------------------------------------
 Fun��o: Criar um novo arquivo.
 	O nome desse novo arquivo � aquele informado pelo par�metro "filename".
