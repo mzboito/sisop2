@@ -7,7 +7,7 @@
 
 SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 DWORD *FAT; //lista da FAT
-DIRENT2 *ROOT; //lista do diretorio raiz
+struct t2fs_record *ROOT; //lista do diretorio raiz
 int partitionInfoInitialized = -1;
 
 /*EXTRA FUNCTIONS*/
@@ -69,33 +69,10 @@ int initializeFAT(){
 
 int initializeRoot(){
 	//the root directory uses only ONE cluster
-	ROOT = (DIRENT2 *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
-
-	//DIRENT2 *DirAtual = malloc(sizeof(DIRENT2));
-	//memcpy(DirAtual, &(partitionInfo->RootDirCluster),sizeof(struct t2fs_record));
-
-	//memcpy(ROOT, &(partitionInfo->RootDirCluster), sizeof(struct t2fs_record));
-	read_cluster(partitionInfo->RootDirCluster, ROOT);
-	int i = 0;
-	while(i <= 6){
-		printf("name %s\n", ROOT[i].name);
-		int j = 0;
-		while(ROOT[i].name[j] != '\0'){
-			printf("%c\n", ROOT[i].name[j]);
-			j++;
-		}
-		printf("fileType %x\n", ROOT[i].fileType);
-		printf("fileSize %08x\n", ROOT[i].fileSize);
-		if(ROOT[i].fileType == TYPEVAL_REGULAR)
-			printf("valid\n");
-		i++;
+	ROOT = (struct t2fs_record *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
+	if(read_cluster(partitionInfo->RootDirCluster, (char *) ROOT) != 0){
+		return -1;
 	}
-	/*
-	typedef struct {
-	    char    name[MAX_FILE_NAME_SIZE+1]; /* Nome do arquivo cuja entrada foi lida do disco
-	    BYTE    fileType;                   /* Tipo do arquivo: regular (0x01) ou diret�rio (0x02)
-	    DWORD   fileSize;                   /* Numero de bytes do arquivo
-	} DIRENT2; */
 	return 0;
 }
 
@@ -153,8 +130,17 @@ void debugStructures(){
 			printf("ERROR_FAT %08x\n", ERROR_FAT);
 			printf("EOF_FAT %08x\n", EOF_FAT);
     }
-		if(initializeRoot() != 0){
-			printf("problem with root directory\n");
+		if(initializeRoot() == 0){
+			int i = 0;
+			while(i <= 6){
+				printf("name %s\n", ROOT[i].name);
+				printf("file size %08x\n", ROOT[i].bytesFileSize);
+				printf("first cluster %08x\n", ROOT[i].firstCluster);
+				if(ROOT[i].TypeVal == TYPEVAL_REGULAR)
+					printf("valid\n");
+				i++;
+			}
 		}
+
   }
 }

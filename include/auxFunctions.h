@@ -9,7 +9,7 @@
 /*OUR CONTROL VARIABLES*/
 extern SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 extern DWORD *FAT; //ponteiro para a FAT
-extern DIRENT2 *ROOT;
+extern struct t2fs_record *ROOT;
 extern int partitionInfoInitialized;
 
 #define ERROR_FAT 0xFFFFFFFE
