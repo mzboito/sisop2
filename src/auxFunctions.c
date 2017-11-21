@@ -65,6 +65,70 @@ int initializeFAT(){
   return 0;
 }
 
+//encontrar cluster livre
+
+DWORD findFreeCluster () {
+
+  DWORD i = 0;
+  int sector = 0;
+  while (i < FATtotalSize) {
+
+	
+	printf("FAT sector %d %08x Cluster value: %08x\n ",sector,i, FAT[i]);
+	
+	if (FAT[i] == FREE_FAT) {
+	   printf("Find Free cluster value: %08x\n",FAT[i]);
+	 
+	   return i;
+	}
+	i++;
+	sector++;
+  }
+  return ERROR_FAT;
+
+}
+
+//marcar um cluster como ocupado na FAT
+
+DWORD markCluster () {
+
+  DWORD i = 0;
+  while (i < FATtotalSize) {
+	
+	if ( FAT[i] != ERROR_FAT && FAT[i] != EOF_FAT && FAT[i] != FREE_FAT) {
+	    
+	    FAT[i] = EOF_FAT;
+	  //  printf("Cluster: %08x\n",i);
+	    printf("Mark Cluster value: %08x\n",FAT[i]);
+	    return i;
+	    
+	}
+	i++;
+  }
+  return ERROR_FAT;
+	
+}
+
+//liberar um cluster ocupado na FAT
+
+DWORD freeCluster () {
+
+  DWORD i = 0;
+  while (i < FATtotalSize) {
+	
+	if ( FAT[i] != ERROR_FAT && FAT[i] != FREE_FAT || FAT[i] == EOF_FAT ) {
+	    
+	    FAT[i] = FREE_FAT;
+	    printf("Free Cluster value: %08x\n",FAT[i]);
+	    return i;
+	    
+	}
+	i++;
+  }
+  return ERROR_FAT;
+
+}
+
 int initializeRoot(){
 	if(partitionInfoInitialized < 0){
     return -1;
