@@ -70,10 +70,20 @@ int initializeFAT(){
 int initializeRoot(){
 	//the root directory uses only ONE cluster
 	ROOT = (DIRENT2 *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
+
+	//DIRENT2 *DirAtual = malloc(sizeof(DIRENT2));
+	//memcpy(DirAtual, &(partitionInfo->RootDirCluster),sizeof(struct t2fs_record));
+
+	//memcpy(ROOT, &(partitionInfo->RootDirCluster), sizeof(struct t2fs_record));
 	read_cluster(partitionInfo->RootDirCluster, ROOT);
 	int i = 0;
 	while(i <= 6){
 		printf("name %s\n", ROOT[i].name);
+		int j = 0;
+		while(ROOT[i].name[j] != '\0'){
+			printf("%c\n", ROOT[i].name[j]);
+			j++;
+		}
 		printf("fileType %x\n", ROOT[i].fileType);
 		printf("fileSize %08x\n", ROOT[i].fileSize);
 		if(ROOT[i].fileType == TYPEVAL_REGULAR)
@@ -97,7 +107,7 @@ int read_cluster(DWORD data_cluster, BYTE *buffer){ //DWORD = unsigned int, BYTE
 		if(read_sector(firstSector, buffer) != 0){
 			return -1; //error reading
 		}
-		buffer = buffer + SECTOR_SIZE; //iterar o buffer
+		buffer = buffer + SECTOR_SIZE;//(SECTOR_SIZE/sizeof(BYTE)); //iterar o buffer
 		firstSector = firstSector + 1; //go to the next sector
 	}
 	return 0;
