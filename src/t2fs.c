@@ -71,6 +71,8 @@ FILE2 create2 (char *filename) {
 			return -1; //allocation problem
 	}
 
+
+	//TODO TRANSFORMAR EM PONTEIRO PQ ESSA MEMÓRIA VAI SUMIR
 	//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
 	struct t2fs_record new_record;
 	new_record.TypeVal = TYPEVAL_REGULAR;
@@ -79,18 +81,25 @@ FILE2 create2 (char *filename) {
 	new_record.firstCluster = cluster;
 
 	//COLAR NOVO REGISTRO NO DIRETORIO
+
+	//TODO TRANSFORMAR EM PONTEIRO PQ ESSA MEMÓRIA VAI SUMIR
 	actual_dir[position] = new_record; // <<<<<<<<<< THIS MAY NOT WORK
 
 	//CRIAR O HANDLER DO ARQUIVO
+	int handler = nOpenFiles;
 
-
+	//TODO TRANSFORMAR EM PONTEIRO PQ ESSA MEMÓRIA VAI SUMIR
 	//ADICIONAR O ARQUIVO NA LISTA DE ARQUIVOS ABERTOS
-	
+	if(OPEN_FILES[handler].fileHandle != -1){ //if the position we have is not free
+			return -1; //major logical error
+	}
+	strcopy(OPEN_FILES[handler].name, name);
+	OPEN_FILES[handler].currentPointer = 0;
+	OPEN_FILES[handler].fileHandle = nOpenFiles;
+	OPEN_FILES[handler].record = &new_record;
+	//OPEN_FILES[handler].dir_record = &dir_record;
 	nOpenFiles++;
-
-
-	//RETORNAR O HANDLER
-
+	return handler;
 }
 
 

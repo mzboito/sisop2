@@ -47,7 +47,7 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
   return 0; //we are good to go
 }
 
-int isRelativePath (char *path) {// return 1 se absoluto, 0 se relativo
+int isRelativePath (char *path){// return 1 se absoluto, 0 se relativo
 	if (*path == '/') {
 	   return 0;
 	}
@@ -169,17 +169,6 @@ void initializeOpenFiles(){ //TODO test this function
 		OPEN_FILES[i] = d;
 		i++;
 	}
-}
-
-int getNewHandle(){ //TODO test this function
-	int i;
-	while(i < MAX_OPEN_FILES){
-		if(OPEN_FILES[i].fileHandle == -1){ //found a free entry
-			return i;
-		}
-		i++;
-	}
-	return -1; //didn't find, error
 }
 
 int findFreeDirEntry(struct t2fs_record *dir){ //TODO TO IMPLEMENT THIS
