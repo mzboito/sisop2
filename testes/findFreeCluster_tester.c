@@ -12,6 +12,20 @@ int main() {
   char names[] = {'.','i','s','i','a','n','e',':','2','5','2','7','3','9','\n',
 		          'M','a','r','c','e','l','y',':','2','2','8','4','5','4'};
  
+   int fimDirPath = fimPath(names);
+  char *dir_path;
+  dir_path = malloc (sizeof (char) * (fimDirPath + 1));
+  int i = 0;
+  
+
+  dirPath (names, dir_path);
+
+  while (i != fimDirPath + 1) {
+	
+	printf("%c\n", *dir_path);
+	i++;
+}
+
   if (structures_init() == 0) {
 	printf("\n\n");
 	printf("Find free cluster return: %08x\n", findFreeCluster());
@@ -22,7 +36,14 @@ int main() {
 printf("\n\n");
 printf("\n\n");
 printf("Is Relative: ", isRelativePath (names));
-
+printf("\n\n");
+printf("\n\n");
+printf("Return file length: %d ",lengthChar (names)); 
+printf("\n\n");
+printf("Inicio nome: %d ",inicioNome (names)); 
+printf("\n\n");
+printf("\n\n");
+printf("Fim path: %d ",fimPath (names)); 
 
   }
   return 0;
