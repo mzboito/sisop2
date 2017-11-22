@@ -8,6 +8,7 @@
 SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 DWORD *FAT; //lista da FAT
 struct t2fs_record *ROOT; //lista do diretorio raiz
+File_descriptor OPEN_FILES[MAX_OPEN_FILES];
 
 DWORD FATtotalSize;
 int partitionInfoInitialized = -1;
@@ -29,6 +30,7 @@ int structures_init(){ //this function tests if the superblock and fat were alre
 		if(initializeRoot() != 0){
 			return -1;
 		}
+		initializeOpenFiles();
 		return 0;//initializeFAT(); //the superblock, FAT and ROOT are now ready
 	}
 	return 0; //no need to read it, it is already in memory
@@ -148,6 +150,27 @@ DWORD cluster2sector(DWORD data_cluster){
 	DWORD displacement = partitionInfo->SectorsPerCluster * data_cluster;
 	DWORD firstSector = initialDataSector + displacement;
 	return firstSector;
+}
+
+void initializeOpenFiles(){ //TODO test this function
+	int i;
+	while(i < MAX_OPEN_FILES){
+		File_descriptor d;
+		d.fileHandle = -1; //init every entry with -1 value (invalid handle value)
+		OPEN_FILES[i] = d;
+		i++;
+	}
+}
+
+int getNewHandle(){ //TODO test this function
+	int i;
+	while(i < MAX_OPEN_FILES){
+		if(OPEN_FILES[i].fileHandle == -1){ //found a free entry
+			return i;
+		}
+		i++;
+	}
+	return -1; //didn't find, error
 }
 
 int findFreeDirEntry(struct t2fs_record *dir){ //TODO TO IMPLEMENT THIS

@@ -35,13 +35,11 @@ typedef struct t2fs_superbloco {		// Tabela 1 � Descri��o dos campos do bl
 
 /*OUR STRUCTURE*/
 typedef struct file_fd {
-
 	char name[MAX_FILE_NAME_SIZE];
 	int currentPointer;
-	int fileHandle;
-	//t2fs_record registroDiretorio;
-	//DIRENT2 entradaDiretorio;
-
+	int fileHandle; //this is an id for the file
+	struct t2fs_record *record;
+	struct t2fs_record *dir_record;
 } File_descriptor;
 
 /*END OUR STRUCTURE*/

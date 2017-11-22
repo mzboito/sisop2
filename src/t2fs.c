@@ -43,22 +43,13 @@ FILE2 create2 (char *filename) {
 
 	//desmembrar o nome para descobrir nome, tipo de path, path
 
-	//testar se já existe alguém no diretório pedido com o mesmo nome -> se sim, erro
-	// isUnique(name, path_for_directory) (or something like this)
 
 	//VARIÁVEIS PROVISORIAS PARA PODER ESCREVER TODO O RESTO
 	char *dir_path; //provisory, this will be the return of the function that gets the path from string
 	char *name;
 
-
-	//PROCURAR UMA ENTRADA DA FAT
-	DWORD cluster = findFreeCluster();
-	if(cluster == EOF_FAT){ //FULL FAT
-			return -1;
-	}
-	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
-			return -1; //allocation problem
-	}
+	//testar se já existe alguém no diretório pedido com o mesmo nome -> se sim, erro
+	// isUnique(name, path_for_directory) (or something like this)
 
 	//ENCONTRAR O DIRETÓRIO
 	//cria uma entrada no diretorio -> se não tem espaço mais pra entradas, erro
@@ -71,22 +62,32 @@ FILE2 create2 (char *filename) {
 		return -1; //full directory
 	}
 
+	//PROCURAR UMA ENTRADA DA FAT
+	DWORD cluster = findFreeCluster();
+	if(cluster == EOF_FAT){ //FULL FAT
+			return -1;
+	}
+	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
+			return -1; //allocation problem
+	}
+
 	//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
-	struct t2fs_record new_record; //allocates memory
+	struct t2fs_record new_record;
 	new_record.TypeVal = TYPEVAL_REGULAR;
 	strcopy(new_record.name, name); //copies the name for the STRUCTURE
 	new_record.bytesFileSize = 0; //a file starts empty
 	new_record.firstCluster = cluster;
 
 	//COLAR NOVO REGISTRO NO DIRETORIO
-	actual_dir[position] = new_record;
+	actual_dir[position] = new_record; // <<<<<<<<<< THIS MAY NOT WORK
 
 	//CRIAR O HANDLER DO ARQUIVO
 
 
 	//ADICIONAR O ARQUIVO NA LISTA DE ARQUIVOS ABERTOS
-	//FALTA CRIAR ESSA LISTA...
+	
 	nOpenFiles++;
+
 
 	//RETORNAR O HANDLER
 
