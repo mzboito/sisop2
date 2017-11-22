@@ -11,7 +11,7 @@ struct t2fs_record *ROOT; //lista do diretorio raiz
 
 DWORD FATtotalSize;
 int partitionInfoInitialized = -1;
-int nOpenFiles
+int nOpenFiles;
 
 /*EXTRA FUNCTIONS*/
 int structures_init(){ //this function tests if the superblock and fat were already initialized
@@ -148,6 +148,20 @@ DWORD cluster2sector(DWORD data_cluster){
 	DWORD displacement = partitionInfo->SectorsPerCluster * data_cluster;
 	DWORD firstSector = initialDataSector + displacement;
 	return firstSector;
+}
+
+int findFreeDirEntry(struct t2fs_record *dir){ //TODO TO IMPLEMENT THIS
+	//all directories use only one CLUSTER each
+	int i = 0;
+	//while(i < ) //iterates until it finds a free entry in the directory
+}
+
+void* getDirRecord(char *dirPath){ //TODO TO IMPLEMENT THIS
+	if(structures_init() != 0){
+		return NULL;
+	}
+	//TODO THE FUNCTION
+	return NULL;
 }
 
 void debugStructures(){

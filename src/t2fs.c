@@ -43,55 +43,53 @@ FILE2 create2 (char *filename) {
 
 	//desmembrar o nome para descobrir nome, tipo de path, path
 
-
 	//testar se já existe alguém no diretório pedido com o mesmo nome -> se sim, erro
+	// isUnique(name, path_for_directory) (or something like this)
 
-	//catar um cluster da fat -> se full fat, erro
+	//VARIÁVEIS PROVISORIAS PARA PODER ESCREVER TODO O RESTO
+	char *dir_path; //provisory, this will be the return of the function that gets the path from string
+	char *name;
 
-	//alocar cluster da fat
 
+	//PROCURAR UMA ENTRADA DA FAT
+	DWORD cluster = findFreeCluster();
+	if(cluster == EOF_FAT){ //FULL FAT
+			return -1;
+	}
+	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
+			return -1; //allocation problem
+	}
+
+	//ENCONTRAR O DIRETÓRIO
 	//cria uma entrada no diretorio -> se não tem espaço mais pra entradas, erro
+	struct t2fs_record *actual_dir = (struct t2fs_record *)getDirRecord(dir_path);
+	if(actual_dir == NULL){
+		return -1; //problem finding the directory
+	}
+	int position = findFreeDirEntry(actual_dir);
+	if(position == -1){
+		return -1; //full directory
+	}
 
-	//fazer uma estrutura de arquivo aberto com current pointer e colocá-lo em zero
+	//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
+	struct t2fs_record new_record; //allocates memory
+	new_record.TypeVal = TYPEVAL_REGULAR;
+	strcopy(new_record.name, name); //copies the name for the STRUCTURE
+	new_record.bytesFileSize = 0; //a file starts empty
+	new_record.firstCluster = cluster;
 
-	//retornar o handler criado
+	//COLAR NOVO REGISTRO NO DIRETORIO
+	actual_dir[position] = new_record;
 
-
-	/*Fun��o: Criar um novo arquivo.
-		O nome desse novo arquivo � aquele informado pelo par�metro "filename".
-		O contador de posi��o do arquivo (current pointer) deve ser colocado na posi��o zero.
-		Caso j� exista um arquivo ou diret�rio com o mesmo nome, a fun��o dever� retornar um erro de cria��o.
-		A fun��o deve retornar o identificador (handle) do arquivo.
-		Esse handle ser� usado em chamadas posteriores do sistema de arquivo para fins de manipula��o do arquivo criado.
-
-	Entra:	filename -> path absoluto para o arquivo a ser criado. Todo o "path" deve existir.
-
-	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o handle do arquivo (n�mero positivo).
-		Em caso de erro, deve ser retornado um valor negativo.*/
-
-	//we need space for its name
-	/*char name = malloc(sizeof(char)*MAX_FILE_NAME_SIZE);
-	strcopy(name, filename);
-	printf("string: %s,  original: %s\n", name, filename);*/
+	//CRIAR O HANDLER DO ARQUIVO
 
 
-	/*File_descriptor *fileDescr = malloc(sizeof(File_descriptor));
-	fileDescr->currentPointer = 0; //?
-	fileDescr->fileHandle = createFileHandle();
-	fileDescr->name = filename;
-	t2fs_record registroDir = malloc(sizeof(t2fs_record));
-	registroDir->TypeVal = 0x01;
-	registroDir->name = filename;
-	registroDir->bytesFileSize = 0; //?
-	registroDir->firstCluster = 0; //?
+	//ADICIONAR O ARQUIVO NA LISTA DE ARQUIVOS ABERTOS
+	//FALTA CRIAR ESSA LISTA...
+	nOpenFiles++;
 
-	DIRENT2 entradaDir = malloc(sizeof(DIRENT2));
-	entradaDir->name = filename;
-	entradaDir->bytesFileSize = 0; //?
+	//RETORNAR O HANDLER
 
-
-	fileDescr->registroDiretorio = registroDir; //?
-	fileDescr->entradaDiretorio = entradaDir; //?*/
 }
 
 
