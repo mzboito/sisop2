@@ -8,8 +8,10 @@
 SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 DWORD *FAT; //lista da FAT
 struct t2fs_record *ROOT; //lista do diretorio raiz
+
 DWORD FATtotalSize;
 int partitionInfoInitialized = -1;
+int nOpenFiles;
 
 /*EXTRA FUNCTIONS*/
 int structures_init(){ //this function tests if the superblock and fat were already initialized
@@ -18,6 +20,7 @@ int structures_init(){ //this function tests if the superblock and fat were alre
 			return -1; //problem reading the superblock
 		}
 		partitionInfoInitialized = 0;
+		nOpenFiles = 0; //no open files at mounting time
 		//time to initialize the FAT
 		if(initializeFAT() != 0){
 			//printf("FAT PROBLEM\n");
@@ -138,9 +141,18 @@ int read_cluster(DWORD data_cluster, BYTE *buffer){ //DWORD = unsigned int, BYTE
 	return 0;
 }
 
-int write_cluster(DWORD data_cluster, BYTE *buffer){ //TODO this function
+int write_cluster(DWORD data_cluster, BYTE *buffer){ //TODO test this function
 	//this function iterates to write a whole cluster, instead of only a sector
-	return -1;
+	DWORD firstSector = cluster2sector(data_cluster);
+	DWORD lastSector = firstSector + partitionInfo->SectorsPerCluster;
+	while(firstSector < lastSector){
+		if(write_sector(firstSector, buffer) != 0){ //write a sector
+			return -1; //stops if error writing
+		}
+		buffer = buffer + SECTOR_SIZE;//iterar o buffer
+		firstSector = firstSector + 1; //go to the next sector
+	}
+	return 0;
 }
 
 DWORD cluster2sector(DWORD data_cluster){
@@ -148,6 +160,20 @@ DWORD cluster2sector(DWORD data_cluster){
 	DWORD displacement = partitionInfo->SectorsPerCluster * data_cluster;
 	DWORD firstSector = initialDataSector + displacement;
 	return firstSector;
+}
+
+int findFreeDirEntry(struct t2fs_record *dir){ //TODO TO IMPLEMENT THIS
+	//all directories use only one CLUSTER each
+	int i = 0;
+	//while(i < ) //iterates until it finds a free entry in the directory
+}
+
+void* getDirRecord(char *dirPath){ //TODO TO IMPLEMENT THIS
+	if(structures_init() != 0){
+		return NULL;
+	}
+	//TODO THE FUNCTION
+	return NULL;
 }
 
 void debugStructures(){
