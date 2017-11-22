@@ -47,6 +47,16 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
   return 0; //we are good to go
 }
 
+// return 1 se absoluto, 0 se relativo
+int isRelativePath (char *path) {
+
+	if (*path == '/') {
+	   return 1;
+	}
+	else return 0;
+
+}
+
 int initializeFAT(){
   if(partitionInfoInitialized < 0){
     return -1;
@@ -72,9 +82,9 @@ int initializeFAT(){
 DWORD findFreeCluster(){//encontrar cluster livre
   DWORD i = 0;
   while(i < FATtotalSize){
-		//printf("FAT sector %d %08x Cluster value: %08x\n ",sector,i, FAT[i]);
+		printf("Cluster value: %08x\n ", FAT[i]);
 		if (FAT[i] == FREE_FAT){ //found a free cluster
-		   //printf("Find Free cluster value: %08x\n",FAT[i]);
+		   printf("Find Free cluster value: %08x\n",FAT[i]);
 		   return i;
 		}
 		i++;
@@ -87,6 +97,7 @@ DWORD set_cluster(DWORD i){ //marcar um cluster como ocupado na FAT
 		return ERROR_FAT;
 	}
 	FAT[i] = EOF_FAT;
+	printf("Set cluster value: %08x\n",FAT[i]);
   return FREE_FAT;
 }
 
@@ -102,6 +113,7 @@ DWORD free_cluster(DWORD i){ //liberar um cluster ocupado na FAT
 		return ERROR_FAT;
 	}
 	FAT[i] = FREE_FAT;
+	printf("Free cluster value: %08x\n",FAT[i]);
 	return FREE_FAT; //return 0;
 }
 
