@@ -171,10 +171,18 @@ void initializeOpenFiles(){ //TODO test this function
 	}
 }
 
-int findFreeDirEntry(struct t2fs_record *dir){ //TODO TO IMPLEMENT THIS
+int findFreeDirEntry(struct t2fs_record *dir){ //get first free position on directory
 	//all directories use only one CLUSTER each
 	int i = 0;
-	//while(i < ) //iterates until it finds a free entry in the directory
+	DWORD clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
+	DWORD numEntries = clusterSize / sizeof(struct t2fs_record);
+	//printf("if the cluster size is %d, then the entries number is %d\n", clusterSize, numEntries);
+	while(i < numEntries){ //iterates until it finds a free entry in the directory
+		if(dir[i].firstCluster == FREE_FAT){
+			return i;
+		}
+		i++;
+	}
 }
 
 void* getDirRecord(char *dirPath){ //TODO TO IMPLEMENT THIS

@@ -76,7 +76,7 @@ FILE2 create2 (char *filename) {
 	//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
 	struct t2fs_record new_record;
 	new_record.TypeVal = TYPEVAL_REGULAR;
-	strcopy(new_record.name, name); //copies the name for the STRUCTURE
+	strcpy(new_record.name, name); //copies the name for the STRUCTURE
 	new_record.bytesFileSize = 0; //a file starts empty
 	new_record.firstCluster = cluster;
 
@@ -93,7 +93,7 @@ FILE2 create2 (char *filename) {
 	if(OPEN_FILES[handler].fileHandle != -1){ //if the position we have is not free
 			return -1; //major logical error
 	}
-	strcopy(OPEN_FILES[handler].name, name);
+	strcpy(OPEN_FILES[handler].name, name);
 	OPEN_FILES[handler].currentPointer = 0;
 	OPEN_FILES[handler].fileHandle = nOpenFiles;
 	OPEN_FILES[handler].record = &new_record;
