@@ -36,7 +36,6 @@ int findFreeDirEntry(struct t2fs_record *dir);
 void* getDirRecord(char *dirPath);
 DWORD set_cluster(DWORD i);
 DWORD free_cluster(DWORD i);
-int getNewHandle();
 
 
 #endif
