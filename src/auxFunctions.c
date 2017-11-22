@@ -47,14 +47,11 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
   return 0; //we are good to go
 }
 
-// return 1 se absoluto, 0 se relativo
-int isRelativePath (char *path) {
-
+int isRelativePath (char *path) {// return 1 se absoluto, 0 se relativo
 	if (*path == '/') {
-	   return 1;
+	   return 0;
 	}
-	else return 0;
-
+	else return 1;
 }
 
 int initializeFAT(){
