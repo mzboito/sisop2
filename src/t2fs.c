@@ -36,41 +36,27 @@ FILE2 create2(char *filename){
 	RECORD *target_dir;
 	int position;
 	if(isRelativePath(filename) == 1){
-			//get target directory relative
+		relative2absolute(filename,name,dir);
+			//>>> transform in absolute path
 	}else{
 		dismemberString(filename,name,dir);
 		//printf("%s,%s\n", name, dir);
-		if(getDir(dir, target_dir) != 0){
+		target_dir = get_dir(dir);
+		if(target_dir == NULL){
 			return -1; //problem finding the directory
 		}
-		//get target directory absolute
-	}
-
-
-	//ENCONTRAR O DIRETÓRIO
-	/*
-	int position;
-	printf("is relative path return for entry %s: %d\n", filename, isRelativePath(filename));
-
-	if(isRelativePath(filename) == 1){
-		printf("is relative!\n");
-	}
-	else{
-		//printf("\n\n%d\n", ROOT[10].firstCluster);
+		if(searchEntryPerName(target_dir, name, TYPEVAL_REGULAR) != EOF_FAT){
+			return -1; //it there is already a file in this directory with same name
 		}
-		position = findFreeDirEntry(target_dir);
-		printf("\n\nTHIS ONE IS OK\n%d\n", ROOT[position].firstCluster);
-		printf("position: %d\n", position);
+		position = findFreeDirEntry(target_dir); //search for a free entry
+		//printf("position: %d\n", position);
 		if(position == -1){
 			return -1; //full directory
 		}
-		printf("\n\nTHIS ONE CRASHES\n");
-		printf("%d\n", target_dir[position].firstCluster);*/
+	}
 
 
-	//testar se já existe alguém no diretório pedido com o mesmo nome -> se sim, erro
-	// isUnique(name, path_for_directory) (or something like this)
-
+	/*
 	//PROCURAR UMA ENTRADA DA FAT
 	/*DWORD cluster = findFreeCluster();
 	if(cluster == EOF_FAT){ //FULL FAT

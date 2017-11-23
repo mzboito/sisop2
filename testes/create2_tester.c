@@ -17,7 +17,29 @@ int main() {
   }
   RECORD *r;
   char *path = "/dir1/\0";
-  getDir(path,r);
+  r = get_dir(path);
+  printf("\n\n");
+  printf_directory(ROOT, 5);
+  printf("\n\n");
+  printf_directory(r, 5);
+  printf("test error\n");
+  char *path1 = "/lalalala/hue/achoquenao/\0";
+  if(get_dir(path1) == NULL){
+    printf("catching the error\n\n");
+  }
+  char *name1 = "file1.txt\0";
+  char *name2 = "file5.txt\0";
+  if(searchEntryPerName(r, name1, TYPEVAL_REGULAR) != EOF_FAT){
+    printf("JA EXISTE %s em %s\n", name1, path);
+  }else{
+    printf("NAO EXISTE %s em %s\n", name1, path);
+  }
+  if(searchEntryPerName(ROOT, name2, TYPEVAL_REGULAR) != EOF_FAT){
+    printf("JA EXISTE %s em %s\n", name2, "root");
+  }else{
+    printf("NAO EXISTE %s em %s\n", name2, "root");
+  }
+  printf("\n\ncurrent path: %s\n", current_path);
   //create2("/file.txt\0");
 
   return 0;

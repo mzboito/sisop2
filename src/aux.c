@@ -14,6 +14,7 @@ int partitionInfoInitialized = -1;
 int nOpenFiles;
 DWORD FATtotalSize;
 DWORD DIRsize; //in number of entries
+char * current_path;
 
 DWORD cluster2sector(DWORD data_cluster){
 	DWORD initialDataSector = partitionInfo->DataSectorStart;
@@ -55,6 +56,7 @@ void debugStructures(){
 				printf("name %s\n", ROOT[i].name);
 				printf("file size %08x\n", ROOT[i].bytesFileSize);
 				printf("first cluster %08x\n", ROOT[i].firstCluster);
+				printf("type %04x\n", ROOT[i].TypeVal);
 				if(ROOT[i].TypeVal == TYPEVAL_REGULAR)
 					printf("        VALID\n");
 				i++;
@@ -65,36 +67,45 @@ void debugStructures(){
   }
 }
 
-int getDir(char *dirPath, RECORD *dirPointer){ //TODO TO IMPLEMENT THIS
-	if(structures_init() != 0){
-		return -1;
-	}
-	char * first_dir = (char *)malloc(sizeof(char)*MAX_FILE_NAME_SIZE);
-	RECORD *current_local = ROOT;
-	while(strlen(dirPath) > 0){
-		dirPath = dirPath + removeFirstDir(dirPath, first_dir);
-		int i = 0;
-		printf("%s\n", first_dir);
-		while(i < DIRsize){
-			if(current_local[i].TypeVal == TYPEVAL_DIRETORIO){ //it it is a dir
-				if(strcmp(current_local[i].name, first_dir) == 0){ //with the same name
-					printf("%s\n", current_local[i].name);
-					DWORD cluster = current_local[i].firstCluster; //get the directory cluster
-					current_local = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
-					read_cluster(cluster, current_local); //read the new directory
-					i = 0;
-				}
-			}
-			i++;
+int findFreeDirEntry(RECORD *dir){ //get first free position on directory
+	int i = 0;
+	//all directories use only one CLUSTER each
+	while(i < DIRsize){ //iterates until it finds a free entry in the directory
+		if(dir[i].firstCluster == FREE_FAT){
+			return i;
 		}
-		//find dir using current
-		//update current
-
+		i++;
 	}
+	return -1;
+}
 
-	dirPointer = ROOT; //<<<<<<<<<<< this is wrong and provisory
-	//TODO THE FUNCTION
-	return 0;
+RECORD* get_dir(char *dirPath){
+	if(structures_init() != 0){
+		return NULL;
+	}
+	int first_time = 1;
+	char *first_dir_name = (char *)malloc(sizeof(char)*MAX_FILE_NAME_SIZE);
+	RECORD *current_local = ROOT;
+
+	while(strlen(dirPath)>0){
+		dirPath = dirPath + removeFirstDir(dirPath, first_dir_name);
+		if(strcmp(first_dir_name, "/\0") == 0){ //if it is the root
+			//printf("I hope\n");
+			current_local = ROOT;
+		}else{
+			DWORD cluster = searchEntryPerName(current_local, first_dir_name, TYPEVAL_DIRETORIO);
+			if(cluster == EOF_FAT){
+				return NULL; //it is not in current directory
+			}
+			if(first_time == 0){ //if it is not the first time
+					free(current_local);
+			}
+			RECORD *r = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
+			read_cluster(cluster, r); //read the new directory
+			current_local = r;
+		}
+	}
+	return current_local;
 }
 
 int initializeFAT(){
@@ -135,7 +146,24 @@ int initializeROOT(){
 		return -1;
 	}
 	CURRENT_DIR = &ROOT[0];
+	current_path = (char *)malloc(sizeof(char)*300);
+	strcpy(current_path, "/\0");
 	DIRsize = (SECTOR_SIZE * partitionInfo->SectorsPerCluster) / sizeof(RECORD);
+	return 0;
+}
+
+int printf_directory(RECORD *dir, int count){
+	if(count > DIRsize){
+		return -1;
+	}
+	int i = 0;
+	while(i < count){
+		printf("name %s\n", dir[i].name);
+		printf("file size %08x\n", dir[i].bytesFileSize);
+		printf("first cluster %08x\n", dir[i].firstCluster);
+		printf("type %04x\n", dir[i].TypeVal);
+		i++;
+	}
 	return 0;
 }
 
@@ -159,6 +187,19 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
     return -1;
     }
   return 0;
+}
+
+DWORD searchEntryPerName(RECORD* dir, char *name, BYTE type){ //searches for a name in the directory and return the cluster
+	int i = 0;
+	while(i < DIRsize){
+		if(strcmp(dir[i].name, name) == 0){
+			if(dir[i].TypeVal == type){
+				return dir[i].firstCluster;
+			}
+		}
+		i++;
+	}
+	return EOF_FAT; //nao achou
 }
 
 int structures_init(){ //this function tests if the superblock and fat were already initialized
@@ -239,22 +280,6 @@ int write_cluster(DWORD data_cluster, BYTE *buffer){ //TODO test this function
 	return 0;
 }
 
-int findFreeDirEntry(struct t2fs_record *dir){ //get first free position on directory
-	//all directories use only one CLUSTER each
-	int i = 0;
-	//DWORD clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
-	//DWORD numEntries = clusterSize / sizeof(struct t2fs_record);
-	//printf("if the cluster size is %d, then the entries number is %d\n", clusterSize, numEntries);
-	while(i < DIRsize){ //iterates until it finds a free entry in the directory
-		//printf("%s\n", dir[i].name);
-		//printf("%08x\n", dir[i].firstCluster);
-		if(dir[i].firstCluster == FREE_FAT){
-			return i;
-		}
-		i++;
-	}
-	return -1;
-}
 
 int addEntry2Dir(struct t2fs_record *dir, int position, struct t2fs_record *entry){
 	printf("before print\n");

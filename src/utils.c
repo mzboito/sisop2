@@ -33,6 +33,10 @@ int isRelativePath(char *path){// return 1 se absoluto, 0 se relativo
 	else return 1;
 }
 
+int relative2absolute(char *fullpath, char *name, char *dir_path){
+  return -1;
+}
+
 int removeFirstDir(char *dir_path, char *first_dir){ //retorna um valor para somar ao ponteiro do dir_path
   int len = strlen(dir_path);
   int i = 0;
@@ -41,9 +45,9 @@ int removeFirstDir(char *dir_path, char *first_dir){ //retorna um valor para som
       i++; //tamanho do que vai ser copiado
       strncpy(first_dir, dir_path, i);
       if(i > 1){ //if it is not root dir
-        first_dir[i-1] = '\0'; //remove last char
-      }else{
-        first_dir[i] = '\0';
+        first_dir[i-1] = '\0'; //remove last char (/)
+      }else{ //if it is the root dir
+        first_dir[1] = '\0';
       }
       return i;
     }

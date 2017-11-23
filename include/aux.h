@@ -21,22 +21,25 @@ extern int partitionInfoInitialized;
 extern int nOpenFiles;
 extern DWORD FATtotalSize;
 extern DWORD DIRsize; //in number of entries
+extern char * current_path;
 
 DWORD cluster2sector();
 void debugStructures();
-int getDir(char *dirPath, RECORD *dirPointer);
+int findFreeDirEntry(struct t2fs_record *dir);
+RECORD* get_dir(char *dirPath);
 int initializeFAT();
 void initializeOPEN_FILES();
 int initializeROOT();
+int printf_directory(RECORD *dir, int count);
 int read_cluster();
 int readSuperBlock();
+DWORD searchEntryPerName(RECORD* dir, char *name, BYTE type);
 int structures_init();
 
 
 /*
 int write_cluster();
 DWORD findFreeCluster();
-int findFreeDirEntry(struct t2fs_record *dir);
 DWORD set_cluster(DWORD i);
 DWORD free_cluster(DWORD i);
 */
