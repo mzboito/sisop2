@@ -40,6 +40,7 @@ FILE2 create2(char *filename){
 	}else{
 		dismemberString(filename,name,dir);
 		//printf("%s,%s\n", name, dir);
+		//?
 		target_dir = get_dir(dir);
 		if(target_dir == NULL){
 			return -1; //problem finding the directory
@@ -52,19 +53,22 @@ FILE2 create2(char *filename){
 		if(position == -1){
 			return -1; //full directory
 		}
-	}
+		//PROCURAR UMA ENTRADA DA FAT
+		DWORD cluster = findFreeCluster();
+		if(cluster == EOF_FAT){ //FULL FAT
+				return -1;
+		}
+		//printf("new cluster: %d\n", cluster);
+		if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
+				return -1; //allocation or writing problem
+		}
+
+
+	}//<< tirar aqui quando descomentar o outro
 
 
 	/*
-	//PROCURAR UMA ENTRADA DA FAT
-	/*DWORD cluster = findFreeCluster();
-	if(cluster == EOF_FAT){ //FULL FAT
-			return -1;
-	}
-	printf("new cluster: %d\n", cluster);
-	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
-			return -1; //allocation problem
-	}*/
+
 
 	//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
 	/*struct t2fs_record *new_record = malloc(sizeof(struct t2fs_record));

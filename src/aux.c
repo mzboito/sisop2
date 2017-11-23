@@ -67,6 +67,20 @@ void debugStructures(){
   }
 }
 
+DWORD findFreeCluster(){//encontrar cluster livre
+	if(structures_init() != 0){
+		return -1; //problem initializing
+	}
+  DWORD i = 0;
+  while(i < FATtotalSize){
+		if (FAT[i] == FREE_FAT){ //found a free cluster
+		   return i;
+		}
+		i++;
+  }
+  return ERROR_FAT;
+}
+
 int findFreeDirEntry(RECORD *dir){ //get first free position on directory
 	int i = 0;
 	//all directories use only one CLUSTER each
@@ -202,6 +216,18 @@ DWORD searchEntryPerName(RECORD* dir, char *name, BYTE type){ //searches for a n
 	return EOF_FAT; //nao achou
 }
 
+DWORD set_cluster(DWORD i){ //TODO WRITE IN THE DISK
+	//marcar um cluster como ocupado na FAT
+	if(FAT[i] != FREE_FAT){
+		return ERROR_FAT;
+	}
+	FAT[i] = EOF_FAT;
+	if(write_FAT() != 0){
+		return EOF_FAT; //problem writing the FAT
+	}
+  return FREE_FAT;
+}
+
 int structures_init(){ //this function tests if the superblock and fat were already initialized
 	if(partitionInfoInitialized < 0){ //if it was not yet read
 		if(readSuperBlock() != 0){ //if tries to read and fails
@@ -221,32 +247,24 @@ int structures_init(){ //this function tests if the superblock and fat were alre
 	return 0;
 }
 
-
+int write_FAT(){
+	if(structures_init() != 0){
+		return -1;
+	}
+	DWORD initial = partitionInfo->pFATSectorStart;
+	DWORD final = partitionInfo->DataSectorStart;
+	int entriesPerSector = SECTOR_SIZE/sizeof(DWORD);
+	DWORD *initialPoint = FAT;
+	while(initial < final){
+			write_sector(initial, (unsigned char *) FAT);
+			initial = initial + 1;
+			FAT = FAT + entriesPerSector;
+	}
+	FAT = initialPoint;
+	return 0;
+}
 
 /*
-DWORD findFreeCluster(){//encontrar cluster livre
-  DWORD i = 0;
-  while(i < FATtotalSize){
-		//printf("Cluster value: %08x\n ", FAT[i]);
-		if (FAT[i] == FREE_FAT){ //found a free cluster
-		   //printf("Find Free cluster value: %08x\n",FAT[i]);
-		   return i;
-		}
-		i++;
-  }
-  return ERROR_FAT;
-}
-
-DWORD set_cluster(DWORD i){ //TODO WRITE IN THE DISK
-	//marcar um cluster como ocupado na FAT
-	if(FAT[i] != FREE_FAT){
-		return ERROR_FAT;
-	}
-	FAT[i] = EOF_FAT;
-	//printf("Set cluster value: %08x\n",FAT[i]);
-  return FREE_FAT;
-}
-
 DWORD free_cluster(DWORD i){ //TODO WRITE IN THE DISK
 	//liberar um cluster ocupado na FAT
 	if (FAT[i] == ERROR_FAT){ //cannot free an error entry

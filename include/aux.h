@@ -25,6 +25,7 @@ extern char * current_path;
 
 DWORD cluster2sector();
 void debugStructures();
+DWORD findFreeCluster();
 int findFreeDirEntry(struct t2fs_record *dir);
 RECORD* get_dir(char *dirPath);
 int initializeFAT();
@@ -34,13 +35,12 @@ int printf_directory(RECORD *dir, int count);
 int read_cluster();
 int readSuperBlock();
 DWORD searchEntryPerName(RECORD* dir, char *name, BYTE type);
+DWORD set_cluster(DWORD i);
 int structures_init();
-
+int write_FAT();
 
 /*
 int write_cluster();
-DWORD findFreeCluster();
-DWORD set_cluster(DWORD i);
 DWORD free_cluster(DWORD i);
 */
 #endif
