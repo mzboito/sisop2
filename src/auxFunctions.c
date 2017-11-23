@@ -2,6 +2,7 @@
 /*** ARQUIVO DE FUNCOES AUXILIARES PARA A IMPLEMENTACAO DA BIBLITOECA T2FS ***/
 #include <stdlib.h>
 #include "stdio.h"
+#include <string.h>
 #include "../include/apidisk.h"
 #include "../include/auxFunctions.h"
 
@@ -124,19 +125,30 @@ void dirPath (char *fullpath, char *dir_path) {
 
 	// assumir que ja alocou esse?? char *dir_path
 	// dir_path = malloc (sizeof (char) * (fimDirPath + 1));
-
+	
 	int len = lengthChar(fullpath) -1; //tamanho do fullpath vai de 0 até len
 	
-
+//subsstring se 0 até fimpath  inserior o \0
 	int i = 0;
 
-	while (i != fimDirPath + 1) {
+	strncpy(dir_path, fullpath, fimDirPath+1);
 
-		*dir_path = fullpath[i];
-		dir_path++;
-		i++;
+}
+
+void filePath (char *fullpath, char *file_path) {
+
+
+	int inicioName = inicioNome(fullpath);
+
+	// assumir que ja alocou esse?? char *dir_path
+	// dir_path = malloc (sizeof (char) * (fimDirPath + 1));
 	
-	}
+	int len = lengthChar(fullpath) -1; //tamanho do fullpath vai de 0 até len
+	
+//subsstring se 0 até fimpath  inserior o \0
+	int i = 0;
+
+	strncpy(file_path, &fullpath[inicioName], len);
 
 }
 
