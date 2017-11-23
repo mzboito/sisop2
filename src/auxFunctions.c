@@ -2,6 +2,7 @@
 /*** ARQUIVO DE FUNCOES AUXILIARES PARA A IMPLEMENTACAO DA BIBLITOECA T2FS ***/
 #include <stdlib.h>
 #include "stdio.h"
+#include <string.h>
 #include "../include/apidisk.h"
 #include "../include/auxFunctions.h"
 
@@ -75,6 +76,81 @@ int initializeFAT(){
 	}
 	FAT = initialPoint;
   return 0;
+}
+
+
+int lengthChar (char *ch) {
+	
+	int i = 0;
+	while (*ch != '\0') {
+
+		i++;
+		ch++;
+	}
+
+	return i;
+}
+
+char *dir_path; //provisory, this will be the return of the function that gets the path from string
+	char *name;
+
+int inicioNome (char *fullpath) {
+
+
+	int len = lengthChar(fullpath) -1; //tamanho do fullpath vai de 0 até len
+	int lenFixo = len;
+	int i = 0;
+	while (len != -1) {
+
+		i++;
+		if (fullpath[len] == '/') {
+			//printf("achou %d %d",i,len);
+			return (lenFixo - i + 2);
+		}
+		len--;
+
+	}
+	return (lenFixo - i + 2);
+}
+
+int fimPath (char *fullpath) {
+
+	return (inicioNome(fullpath) - 2);
+	
+}
+
+void dirPath (char *fullpath, char *dir_path) {
+
+
+	int fimDirPath = fimPath(fullpath);
+
+	// assumir que ja alocou esse?? char *dir_path
+	// dir_path = malloc (sizeof (char) * (fimDirPath + 1));
+	
+	int len = lengthChar(fullpath) -1; //tamanho do fullpath vai de 0 até len
+	
+//subsstring se 0 até fimpath  inserior o \0
+	int i = 0;
+
+	strncpy(dir_path, fullpath, fimDirPath+1);
+
+}
+
+void filePath (char *fullpath, char *file_path) {
+
+
+	int inicioName = inicioNome(fullpath);
+
+	// assumir que ja alocou esse?? char *dir_path
+	// dir_path = malloc (sizeof (char) * (fimDirPath + 1));
+	
+	int len = lengthChar(fullpath) -1; //tamanho do fullpath vai de 0 até len
+	
+//subsstring se 0 até fimpath  inserior o \0
+	int i = 0;
+
+	strncpy(file_path, &fullpath[inicioName], len);
+
 }
 
 DWORD findFreeCluster(){//encontrar cluster livre
