@@ -20,6 +20,7 @@ extern File_descriptor OPEN_FILES[MAX_OPEN_FILES];
 
 extern int partitionInfoInitialized;
 extern DWORD FATtotalSize;
+extern DWORD DIRsize; //in number of entries
 extern int nOpenFiles;
 
 
@@ -34,7 +35,7 @@ DWORD cluster2sector();
 void debugStructures();
 DWORD findFreeCluster();
 int findFreeDirEntry(struct t2fs_record *dir);
-//void* getDirRecord(char *dirPath);
+int getDirStructure(char *dirPath, struct t2fs_record *dirPointer);
 DWORD set_cluster(DWORD i);
 DWORD free_cluster(DWORD i);
 

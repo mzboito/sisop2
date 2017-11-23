@@ -57,8 +57,7 @@ FILE2 create2 (char *filename) {
 		printf("is relative!\n");
 	}
 	else{
-		target_dir = getDirRecord(dir_path);
-		if(target_dir == NULL){
+		if(getDirStructure(dir_path, target_dir) != 0){
 			return -1; //problem finding the directory
 		}
 		int position = findFreeDirEntry(target_dir);
@@ -82,17 +81,20 @@ FILE2 create2 (char *filename) {
 	}
 
 	//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
-	/*struct t2fs_record *new_record = malloc(sizeof(struct t2fs_record));
+	struct t2fs_record *new_record = malloc(sizeof(struct t2fs_record));
 	new_record->TypeVal = TYPEVAL_REGULAR;
 	strcpy(new_record->name, name); //copies the name for the STRUCTURE
 	new_record->bytesFileSize = 0; //a file starts empty
-	new_record->firstCluster = cluster;*/
+	new_record->firstCluster = cluster;
 
 	//COLAR NOVO REGISTRO NO DIRETORIO
 	//target_dir[position] = new_record;
 
 	//target_dir[position] = malloc(sizeof(struct t2fs_record));
-	printf("%d\n", target_dir[position].TypeVal);
+	printf("before\n");
+	addEntry2Dir(ROOT, position, new_record);
+	printf("%d\n", ROOT[position].firstCluster);
+	printf("%d\n", target_dir[0].TypeVal);
 
 	target_dir[position].TypeVal = TYPEVAL_REGULAR;
 	strcpy(target_dir[position].name, name);

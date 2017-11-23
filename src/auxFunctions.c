@@ -13,22 +13,26 @@ struct t2fs_record CURRENT_DIR;
 File_descriptor OPEN_FILES[MAX_OPEN_FILES];
 
 DWORD FATtotalSize;
+DWORD DIRsize; //in number of entries
 int partitionInfoInitialized = -1;
 int nOpenFiles;
 
 /*EXTRA FUNCTIONS*/
 int structures_init(){ //this function tests if the superblock and fat were already initialized
 	if(partitionInfoInitialized < 0){ //if it was not yet read
+		//printf("bnefore read super block\n");
 		if(readSuperBlock() != 0){ //if tries to read and fails
 			return -1; //problem reading the superblock
 		}
 		partitionInfoInitialized = 0;
 		nOpenFiles = 0; //no open files at mounting time
 		//time to initialize the FAT
+		//printf("bnefore read FAT\n");
 		if(initializeFAT() != 0){
 			//printf("FAT PROBLEM\n");
 			return -1; //problem creating the FAT
 		}
+		//printf("bnefore read root\n");
 		if(initializeRoot() != 0){
 			return -1;
 		}
@@ -78,9 +82,7 @@ int initializeFAT(){
   return 0;
 }
 
-
 int lengthChar (char *ch) {
-	
 	int i = 0;
 	while (*ch != '\0') {
 
@@ -91,12 +93,7 @@ int lengthChar (char *ch) {
 	return i;
 }
 
-char *dir_path; //provisory, this will be the return of the function that gets the path from string
-	char *name;
-
-int inicioNome (char *fullpath) {
-
-
+int inicioNome(char *fullpath) {
 	int len = lengthChar(fullpath) -1; //tamanho do fullpath vai de 0 até len
 	int lenFixo = len;
 	int i = 0;
@@ -113,44 +110,29 @@ int inicioNome (char *fullpath) {
 	return (lenFixo - i + 2);
 }
 
-int fimPath (char *fullpath) {
-
+int fimPath(char *fullpath) {
 	return (inicioNome(fullpath) - 2);
-	
 }
 
 void dirPath (char *fullpath, char *dir_path) {
-
-
 	int fimDirPath = fimPath(fullpath);
-
 	// assumir que ja alocou esse?? char *dir_path
 	// dir_path = malloc (sizeof (char) * (fimDirPath + 1));
-	
 	int len = lengthChar(fullpath) -1; //tamanho do fullpath vai de 0 até len
-	
-//subsstring se 0 até fimpath  inserior o \0
+	//subsstring se 0 até fimpath  inserior o \0
 	int i = 0;
-
 	strncpy(dir_path, fullpath, fimDirPath+1);
-
 }
 
 void filePath (char *fullpath, char *file_path) {
-
-
 	int inicioName = inicioNome(fullpath);
-
 	// assumir que ja alocou esse?? char *dir_path
 	// dir_path = malloc (sizeof (char) * (fimDirPath + 1));
-	
+
 	int len = lengthChar(fullpath) -1; //tamanho do fullpath vai de 0 até len
-	
-//subsstring se 0 até fimpath  inserior o \0
+	//subsstring se 0 até fimpath  inserior o \0
 	int i = 0;
-
 	strncpy(file_path, &fullpath[inicioName], len);
-
 }
 
 DWORD findFreeCluster(){//encontrar cluster livre
@@ -204,6 +186,9 @@ int initializeRoot(){
 		return -1;
 	}
 	CURRENT_DIR = ROOT[0];
+	DIRsize = (SECTOR_SIZE * partitionInfo->SectorsPerCluster) / sizeof(struct t2fs_record);
+	printf("seg fault test\n");
+	printf("%08x\n", ROOT[DIRsize-1].firstCluster);
 	return 0;
 }
 
@@ -255,10 +240,12 @@ void initializeOpenFiles(){ //TODO test this function
 int findFreeDirEntry(struct t2fs_record *dir){ //get first free position on directory
 	//all directories use only one CLUSTER each
 	int i = 0;
-	DWORD clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
-	DWORD numEntries = clusterSize / sizeof(struct t2fs_record);
+	//DWORD clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
+	//DWORD numEntries = clusterSize / sizeof(struct t2fs_record);
 	//printf("if the cluster size is %d, then the entries number is %d\n", clusterSize, numEntries);
-	while(i < numEntries){ //iterates until it finds a free entry in the directory
+	while(i < DIRsize){ //iterates until it finds a free entry in the directory
+		//printf("%s\n", dir[i].name);
+		//printf("%08x\n", dir[i].firstCluster);
 		if(dir[i].firstCluster == FREE_FAT){
 			return i;
 		}
@@ -266,12 +253,22 @@ int findFreeDirEntry(struct t2fs_record *dir){ //get first free position on dire
 	}
 }
 
-struct t2fs_record* getDirRecord(char *dirPath){ //TODO TO IMPLEMENT THIS
+int addEntry2Dir(struct t2fs_record *dir, int position, struct t2fs_record *entry){
+	printf("before print\n");
+	printf("%08x\n", ROOT[1].firstCluster);
+	printf("%08x\n", dir[1].firstCluster);
+	dir[position].firstCluster = entry->firstCluster;
+	printf("%08x\n", dir[position].firstCluster);
+	printf("%08x\n", ROOT[position].firstCluster);
+}
+
+int getDirStructure(char *dirPath, struct t2fs_record *dirPointer){ //TODO TO IMPLEMENT THIS
 	if(structures_init() != 0){
-		return NULL;
+		return -1;
 	}
+	dirPointer = ROOT; //<<<<<<<<<<< this is wrong and provisory
 	//TODO THE FUNCTION
-	return ROOT; //<<<<<<<<<<< this is wrong and provisory
+	return 0;
 }
 
 void debugStructures(){
@@ -304,7 +301,7 @@ void debugStructures(){
     }
 		if(initializeRoot() == 0){
 			int i = 0;
-			while(i <= 6){
+			while(i <= 20){
 				printf("name %s\n", ROOT[i].name);
 				printf("file size %08x\n", ROOT[i].bytesFileSize);
 				printf("first cluster %08x\n", ROOT[i].firstCluster);
@@ -312,7 +309,7 @@ void debugStructures(){
 					printf("valid\n");
 				i++;
 			}
-			printf("current dir: %s\n\n", CURRENT_DIR.name);
+			printf("\ncurrent dir: %s\n\n", CURRENT_DIR.name);
 		}
 
   }
