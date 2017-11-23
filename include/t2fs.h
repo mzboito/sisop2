@@ -1,5 +1,3 @@
-
-
 #ifndef __LIBT2FS___
 #define __LIBT2FS___
 
@@ -45,7 +43,7 @@ typedef struct file_fd {
 /*END OUR STRUCTURE*/
 
 /** Registro de diret�rio (entrada de diret�rio) */
-struct t2fs_record {
+typedef struct t2fs_record {
     BYTE    TypeVal;        		/* TypeVal	Tipo da entrada. Indica se o registro � v�lido e, se for, o tipo do arquivo (regular ou diret�rio). */
 					/*	0x00, registro inv�lido (n�o associado a nenhum arquivo);
 						0x01, arquivo regular;
@@ -55,7 +53,7 @@ struct t2fs_record {
     char    name[MAX_FILE_NAME_SIZE]; 	/* Nome do arquivo. : string com caracteres ASCII (0x21 at� 0x7A), case sensitive.             */
     DWORD   bytesFileSize;  		/* Tamanho do arquivo. Expresso em n�mero de bytes.          */
     DWORD   firstCluster;		/* N�mero do primeiro cluster de dados correspondente a essa entrada de diret�rio */
-};
+} RECORD;
 
 #pragma pack(pop)
 

@@ -29,7 +29,25 @@ int main() {
 
 printf("\n\n\n\n");
 
- 
+ // TESTE PARA FILE_PATH
+
+	int inicioPath = inicioNome(names);
+	int tam = lengthChar (names);
+	int dif = tam - inicioPath + 1;
+	char *file_path;
+	file_path = malloc (sizeof (char) * (dif));
+	filePath(names,file_path);
+	int j = inicioPath;
+
+	 while (j != tam + 1) {
+	
+	printf("%c\n ", *file_path);
+	file_path++;
+	j++;
+	}
+
+printf("inicio nome %d\n\n", inicioPath);
+printf("inicio nome %d", tam);
 
 /*
   if (structures_init() == 0) {

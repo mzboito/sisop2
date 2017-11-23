@@ -15,8 +15,11 @@ BIN_DIR=./bin
 SRC_DIR=./src
 
 all:
+	gcc -c src/t2fs.c -o bin/t2fs.o -Wall
+	gcc -c src/aux.c -o bin/aux.o -Wall
+	gcc -c src/utils.c -o bin/utils.o -Wall
 
 clean:
-	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*~ *~
+	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/t2fs.o $(BIN_DIR)/aux.o $(BIN_DIR)/utils.o $ $(SRC_DIR)/*~ $(INC_DIR)/*~ *~
 
 

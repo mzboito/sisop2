@@ -1,43 +1,43 @@
 #pragma once
-#ifndef AUXFUNCTIONS_H
-#define AUXFUNCTIONS_H
+#ifndef AUX_H
+#define AUXF_H
 
-/*** ARQUIVO DE FUNCOES AUXILIARES PARA A IMPLEMENTACAO DA BIBLITOECA T2FS ***/
+/*** FUNCOES AUXILIARES PARA A IMPLEMENTACAO DA BIBLITOECA T2FS ***/
 #include "t2fs.h"
 
-#define ERROR_FAT 0xFFFFFFFE
 #define EOF_FAT 0xFFFFFFFF
+#define ERROR_FAT 0xFFFFFFFE
 #define FREE_FAT 0x00000000
-
 #define MAX_OPEN_FILES 10
 
 /*OUR CONTROL VARIABLES*/
 extern SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 extern DWORD *FAT; //ponteiro para a FAT
-extern struct t2fs_record *ROOT;
-extern struct t2fs_record CURRENT_DIR;
+extern RECORD *ROOT; //struct t2fs_record *ROOT;
+extern RECORD *CURRENT_DIR; //struct t2fs_record CURRENT_DIR;
 extern File_descriptor OPEN_FILES[MAX_OPEN_FILES];
 
 extern int partitionInfoInitialized;
+extern int nOpenFiles;
 extern DWORD FATtotalSize;
 extern DWORD DIRsize; //in number of entries
-extern int nOpenFiles;
 
-
-int structures_init();
-int readSuperBlock();
-int initializeFAT();
-int initializeRoot();
-void initializeOpenFiles();
-int read_cluster();
-int write_cluster();
 DWORD cluster2sector();
 void debugStructures();
+int getDir(char *dirPath, RECORD *dirPointer);
+int initializeFAT();
+void initializeOPEN_FILES();
+int initializeROOT();
+int read_cluster();
+int readSuperBlock();
+int structures_init();
+
+
+/*
+int write_cluster();
 DWORD findFreeCluster();
 int findFreeDirEntry(struct t2fs_record *dir);
-int getDirStructure(char *dirPath, struct t2fs_record *dirPointer);
 DWORD set_cluster(DWORD i);
 DWORD free_cluster(DWORD i);
-
-
+*/
 #endif
