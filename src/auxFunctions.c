@@ -8,6 +8,7 @@
 SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 DWORD *FAT; //lista da FAT
 struct t2fs_record *ROOT; //lista do diretorio raiz
+struct t2fs_record CURRENT_DIR;
 File_descriptor OPEN_FILES[MAX_OPEN_FILES];
 
 DWORD FATtotalSize;
@@ -89,7 +90,8 @@ DWORD findFreeCluster(){//encontrar cluster livre
   return ERROR_FAT;
 }
 
-DWORD set_cluster(DWORD i){ //marcar um cluster como ocupado na FAT
+DWORD set_cluster(DWORD i){ //TODO WRITE IN THE DISK
+	//marcar um cluster como ocupado na FAT
 	if(FAT[i] != FREE_FAT){
 		return ERROR_FAT;
 	}
@@ -98,7 +100,8 @@ DWORD set_cluster(DWORD i){ //marcar um cluster como ocupado na FAT
   return FREE_FAT;
 }
 
-DWORD free_cluster(DWORD i){ //liberar um cluster ocupado na FAT
+DWORD free_cluster(DWORD i){ //TODO WRITE IN THE DISK
+	//liberar um cluster ocupado na FAT
 	if (FAT[i] == ERROR_FAT){ //cannot free an error entry
 		return ERROR_FAT;
 	}
@@ -112,6 +115,7 @@ DWORD free_cluster(DWORD i){ //liberar um cluster ocupado na FAT
 	FAT[i] = FREE_FAT;
 	printf("Free cluster value: %08x\n",FAT[i]);
 	return FREE_FAT; //return 0;
+
 }
 
 int initializeRoot(){
@@ -123,6 +127,7 @@ int initializeRoot(){
 	if(read_cluster(partitionInfo->RootDirCluster, (char *) ROOT) != 0){
 		return -1;
 	}
+	CURRENT_DIR = ROOT[0];
 	return 0;
 }
 
@@ -164,9 +169,9 @@ DWORD cluster2sector(DWORD data_cluster){
 void initializeOpenFiles(){ //TODO test this function
 	int i;
 	while(i < MAX_OPEN_FILES){
-		File_descriptor d;
-		d.fileHandle = -1; //init every entry with -1 value (invalid handle value)
-		OPEN_FILES[i] = d;
+		//File_descriptor *d = malloc(sizeof(File_descriptor));
+		//d->fileHandle = -1; //init every entry with -1 value (invalid handle value)
+		OPEN_FILES[i].fileHandle = -1;
 		i++;
 	}
 }
@@ -231,6 +236,7 @@ void debugStructures(){
 					printf("valid\n");
 				i++;
 			}
+			printf("current dir: %s\n\n", CURRENT_DIR.name);
 		}
 
   }

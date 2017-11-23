@@ -15,6 +15,7 @@
 extern SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 extern DWORD *FAT; //ponteiro para a FAT
 extern struct t2fs_record *ROOT;
+extern struct t2fs_record CURRENT_DIR;
 extern File_descriptor OPEN_FILES[MAX_OPEN_FILES];
 
 extern int partitionInfoInitialized;
