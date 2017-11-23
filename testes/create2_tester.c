@@ -10,6 +10,7 @@
 int main() {
   printf("return init structures %d\n", structures_init());
   printf("return first free directory entry %d\n", findFreeDirEntry(ROOT));
+  create2("/file.txt\0");
 
   return 0;
 }

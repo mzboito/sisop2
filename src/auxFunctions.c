@@ -48,7 +48,7 @@ int readSuperBlock(){ //this function reads the superblock to get the info we ne
   return 0; //we are good to go
 }
 
-int isRelativePath (char *path){// return 1 se absoluto, 0 se relativo
+int isRelativePath(char *path){// return 1 se absoluto, 0 se relativo
 	if (*path == '/') {
 	   return 0;
 	}
@@ -80,9 +80,9 @@ int initializeFAT(){
 DWORD findFreeCluster(){//encontrar cluster livre
   DWORD i = 0;
   while(i < FATtotalSize){
-		printf("Cluster value: %08x\n ", FAT[i]);
+		//printf("Cluster value: %08x\n ", FAT[i]);
 		if (FAT[i] == FREE_FAT){ //found a free cluster
-		   printf("Find Free cluster value: %08x\n",FAT[i]);
+		   //printf("Find Free cluster value: %08x\n",FAT[i]);
 		   return i;
 		}
 		i++;
@@ -96,7 +96,7 @@ DWORD set_cluster(DWORD i){ //TODO WRITE IN THE DISK
 		return ERROR_FAT;
 	}
 	FAT[i] = EOF_FAT;
-	printf("Set cluster value: %08x\n",FAT[i]);
+	//printf("Set cluster value: %08x\n",FAT[i]);
   return FREE_FAT;
 }
 
@@ -113,7 +113,7 @@ DWORD free_cluster(DWORD i){ //TODO WRITE IN THE DISK
 		return ERROR_FAT;
 	}
 	FAT[i] = FREE_FAT;
-	printf("Free cluster value: %08x\n",FAT[i]);
+	//printf("Free cluster value: %08x\n",FAT[i]);
 	return FREE_FAT; //return 0;
 
 }
@@ -190,12 +190,12 @@ int findFreeDirEntry(struct t2fs_record *dir){ //get first free position on dire
 	}
 }
 
-void* getDirRecord(char *dirPath){ //TODO TO IMPLEMENT THIS
+struct t2fs_record* getDirRecord(char *dirPath){ //TODO TO IMPLEMENT THIS
 	if(structures_init() != 0){
 		return NULL;
 	}
 	//TODO THE FUNCTION
-	return NULL;
+	return ROOT; //<<<<<<<<<<< this is wrong and provisory
 }
 
 void debugStructures(){

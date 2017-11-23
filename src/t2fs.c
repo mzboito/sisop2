@@ -40,46 +40,66 @@ FILE2 create2 (char *filename) {
 	if(nOpenFiles == MAX_OPEN_FILES){
 		return -1; //we do not have space for another open file
 	}
+	printf("number of open files: %d\n", nOpenFiles);
 
 	//desmembrar o nome para descobrir nome, tipo de path, path
-
-
 	//VARIÁVEIS PROVISORIAS PARA PODER ESCREVER TODO O RESTO
-	char *dir_path; //provisory, this will be the return of the function that gets the path from string
-	char *name;
+	char *dir_path = malloc(sizeof(char)*MAX_FILE_NAME_SIZE);//provisory, this will be the return of the function that gets the path from string
+	char *name = filename;
+	strcpy(dir_path,"/\0");
+
+	//ENCONTRAR O DIRETÓRIO
+	struct t2fs_record *target_dir;
+	int position;
+	printf("is relative path return for entry %s: %d\n", filename, isRelativePath(filename));
+
+	if(isRelativePath(filename) == 1){
+		printf("is relative!\n");
+	}
+	else{
+		target_dir = getDirRecord(dir_path);
+		if(target_dir == NULL){
+			return -1; //problem finding the directory
+		}
+		int position = findFreeDirEntry(target_dir);
+		printf("position: %d\n", position);
+		if(position == -1){
+			return -1; //full directory
+		}
+	}
 
 	//testar se já existe alguém no diretório pedido com o mesmo nome -> se sim, erro
 	// isUnique(name, path_for_directory) (or something like this)
-
-	//ENCONTRAR O DIRETÓRIO
-	//cria uma entrada no diretorio -> se não tem espaço mais pra entradas, erro
-	struct t2fs_record *actual_dir = (struct t2fs_record *)getDirRecord(dir_path);
-	if(actual_dir == NULL){
-		return -1; //problem finding the directory
-	}
-	int position = findFreeDirEntry(actual_dir);
-	if(position == -1){
-		return -1; //full directory
-	}
 
 	//PROCURAR UMA ENTRADA DA FAT
 	DWORD cluster = findFreeCluster();
 	if(cluster == EOF_FAT){ //FULL FAT
 			return -1;
 	}
+	printf("new cluster: %d\n", cluster);
 	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
 			return -1; //allocation problem
 	}
 
 	//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
-	struct t2fs_record *new_record = malloc(sizeof(struct t2fs_record));
+	/*struct t2fs_record *new_record = malloc(sizeof(struct t2fs_record));
 	new_record->TypeVal = TYPEVAL_REGULAR;
 	strcpy(new_record->name, name); //copies the name for the STRUCTURE
 	new_record->bytesFileSize = 0; //a file starts empty
-	new_record->firstCluster = cluster;
+	new_record->firstCluster = cluster;*/
 
 	//COLAR NOVO REGISTRO NO DIRETORIO
-	actual_dir[position] = &new_record;
+	//target_dir[position] = new_record;
+
+	//target_dir[position] = malloc(sizeof(struct t2fs_record));
+	printf("%d\n", target_dir[position].TypeVal);
+
+	target_dir[position].TypeVal = TYPEVAL_REGULAR;
+	strcpy(target_dir[position].name, name);
+	target_dir[position].bytesFileSize = 0;
+	target_dir[position].firstCluster = cluster;
+
+	printf("is it here?\n");
 
 	//CRIAR O HANDLER DO ARQUIVO
 	int handler = nOpenFiles;
@@ -92,8 +112,8 @@ FILE2 create2 (char *filename) {
 	strcpy(OPEN_FILES[handler].name, name);
 	OPEN_FILES[handler].currentPointer = 0;
 	OPEN_FILES[handler].fileHandle = nOpenFiles;
-	OPEN_FILES[handler].record = &new_record;
-	//OPEN_FILES[handler].dir_record = &dir_record;
+	OPEN_FILES[handler].record = &target_dir[position];
+	OPEN_FILES[handler].dir_record = &target_dir[0];
 
 	nOpenFiles++;
 	return handler;
