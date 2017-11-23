@@ -181,6 +181,21 @@ int printf_directory(RECORD *dir, int count){
 	return 0;
 }
 
+int printf_FAT(int count){
+	if(count > FATtotalSize){
+		return -1;
+	}
+	int i = 0;
+	while(i < count){
+		printf("%dth FAT sector: %08x\n", i, FAT[i]);
+		i++;
+	}
+	printf("FREE_FAT %08x\n", FREE_FAT);
+	printf("ERROR_FAT %08x\n", ERROR_FAT);
+	printf("EOF_FAT %08x\n", EOF_FAT);
+	return 0;
+}
+
 int read_cluster(DWORD data_cluster, BYTE *buffer){ //this function iterates to read a whole cluster, instead of only a sector
 	DWORD firstSector = cluster2sector(data_cluster);
 	DWORD lastSector = firstSector + partitionInfo->SectorsPerCluster;
@@ -222,9 +237,10 @@ DWORD set_cluster(DWORD i){ //TODO WRITE IN THE DISK
 		return ERROR_FAT;
 	}
 	FAT[i] = EOF_FAT;
+	/*
 	if(write_FAT() != 0){
 		return EOF_FAT; //problem writing the FAT
-	}
+	}*/
   return FREE_FAT;
 }
 

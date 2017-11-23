@@ -62,15 +62,11 @@ FILE2 create2(char *filename){
 		if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
 				return -1; //allocation or writing problem
 		}
+		//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
 
 
 	}//<< tirar aqui quando descomentar o outro
-
-
 	/*
-
-
-	//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
 	/*struct t2fs_record *new_record = malloc(sizeof(struct t2fs_record));
 	new_record->TypeVal = TYPEVAL_REGULAR;
 	strcpy(new_record->name, name); //copies the name for the STRUCTURE
