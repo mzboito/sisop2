@@ -44,8 +44,9 @@ int relative2absolute(char *fullpath, char *name, char *dir_path){
       if(strstr(fullpath,"./\0")){ //path começa com um ponto
         //printf("um ponto!\n");
       }else{ //path não começa com ponto
-        strcpy(name, fullpath);
-        strcpy(dir_path, current_path);
+
+        //strcpy(name, fullpath);
+        //strcpy(dir_path, current_path);
         return 0;
       }
     }
