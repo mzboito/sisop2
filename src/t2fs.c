@@ -29,7 +29,6 @@ FILE2 create2(char *filename){
 		return -1; //we do not have space for another open file
 	}
 	//printf("number of open files: %d\n", nOpenFiles);
-
 	int length_path = strlen(filename);
 	char * name = (char *)malloc(sizeof(char)*length_path);
 	char * dir = (char *)malloc(sizeof(char)*length_path);

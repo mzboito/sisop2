@@ -40,6 +40,10 @@ int main() {
     printf("NAO EXISTE %s em %s\n", name2, "root");
   }
   printf("\n\ncurrent path: %s\n", current_path);
+
+  relative2absolute("../file.txt",name1,name2);
+  relative2absolute("./file.txt",name1,name2);
+  relative2absolute("file.txt",name1,name2);
   //create2("/file.txt\0");
 
   return 0;

@@ -34,7 +34,22 @@ int isRelativePath(char *path){// return 1 se absoluto, 0 se relativo
 }
 
 int relative2absolute(char *fullpath, char *name, char *dir_path){
-  return -1;
+  if(fullpath[0] == '/'){
+    return -1; //ABSOLUTE PATH <O>
+  }
+  else{
+    if(strstr(fullpath,"../\0")){ //path começa com dois pontos
+      //printf("dois pontos!\n");
+    }else{
+      if(strstr(fullpath,"./\0")){ //path começa com um ponto
+        //printf("um ponto!\n");
+      }else{ //path não começa com ponto
+        strcpy(name, fullpath);
+        strcpy(dir_path, current_path);
+        return 0;
+      }
+    }
+  }
 }
 
 int removeFirstDir(char *dir_path, char *first_dir){ //retorna um valor para somar ao ponteiro do dir_path
