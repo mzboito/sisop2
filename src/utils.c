@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../include/aux.h"
 #include "../include/t2fs.h"
 #include "../include/utils.h"
 
@@ -36,19 +37,37 @@ int isRelativePath(char *path){// return 1 se absoluto, 0 se relativo
 }
 
 int relative2absolute(char *fullpath, char *name, char *dir_path){
+  //printf("%s", fullpath);
   if(fullpath[0] == '/'){
     return -1; //ABSOLUTE PATH <O>
   }
   else{
     if(strstr(fullpath,"../\0")){ //path começa com dois pontos
-      //printf("dois pontos!\n");
+      printf("dois pontos!\n");
     }else{
       if(strstr(fullpath,"./\0")){ //path começa com um ponto
-        //printf("um ponto!\n");
+        printf("um ponto!\n");
       }else{ //path não começa com ponto
+        if(strstr(fullpath,"/\0")){ //if there are directories inside
+          char *from_relative = (char *)malloc(sizeof(char)*100);
+          dismemberString(fullpath, name, from_relative);
+          printf("from relative %s\n", from_relative);
+          printf("name %d\n", name);
+          printf("current %s", current_path);
 
-        //strcpy(name, fullpath);
-        //strcpy(dir_path, current_path);
+        }else{ //only the name in the fullpath
+          printf("caso3\n");
+          int len = strlen(fullpath);
+          char *n = (char *)malloc(sizeof(char)*len);
+          strcpy(n, fullpath);
+          printf("name %s\n", n);
+          len = strlen(current_path);
+          char *d = (char *)malloc(sizeof(char)*len);
+          strcpy(d, current_path);
+          name = n;
+          dir_path = d;
+          printf("dir %s\n", d);
+        }
         return 0;
       }
     }
