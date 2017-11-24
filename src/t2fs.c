@@ -35,7 +35,12 @@ FILE2 create2(char *filename){
 	RECORD *target_dir;
 	int position;
 	if(isRelativePath(filename) == 1){
-		relative2absolute(filename,name,dir);
+		//relative2absolute(filename,name,dir);
+			char * relative = (char *)malloc(sizeof(char)*length_path);
+			dismemberString(filename,name,relative);
+			dir[0] = '\0';
+			strcat(dir, current_path); //get path until that point
+			strcat(dir, relative);
 			//>>> transform in absolute path
 	}else{
 		printf("absolute path\n");

@@ -124,7 +124,8 @@ RECORD* get_dir(char *dirPath){
 	RECORD *current_local = ROOT;
 
 	while(strlen(dirPath)>0){
-		dirPath = dirPath + removeFirstDir(dirPath, first_dir_name);
+		int j = removeFirstDir(dirPath, first_dir_name);
+		dirPath = dirPath + j;
 		if(strcmp(first_dir_name, "/\0") == 0){ //if it is the root
 			//printf("I hope\n");
 			current_local = ROOT;
