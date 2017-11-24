@@ -62,7 +62,5 @@ int main() {
   current_path = "/1/2/3/4/5/6/7/\0";
   relative2absolute(filepath,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
-  //create2("/file.txt\0");
-  //printf_OPEN_FILES(nOpenFiles);
   return 0;
 }

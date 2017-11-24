@@ -108,26 +108,3 @@ int removeFirstDir(char *dir_path, char *first_dir){ //retorna um valor para som
   }
   return -1; //nao achou
 }
-
-
-/*
-int achaBarras (char *fullpath) {
-
-	int len = strlen(current_path);
-	int barras = 0;
-
-	while (len != -1) {
-
-		len--;
-		if (fullpath[len] == '/') {
-		    barras++;
-		}
-		if (barras == 2) {
-			//novo caminho começa em 0, termina em len, que ja é a barra
-			return len;
-
-		}
-	}
-	return len;
-}
-*/
