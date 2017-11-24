@@ -50,9 +50,9 @@ int main() {
   name2 = (char *)malloc(sizeof(char)*100);
   relative2absolute(filepath3,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
-  /*relative2absolute(filepath2,name1,name2);
+  relative2absolute(filepath4,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
-  relative2absolute(filepath3,name1,name2);
+  /*relative2absolute(filepath3,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
   relative2absolute(filepath4,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
