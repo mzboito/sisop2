@@ -92,3 +92,59 @@ int removeFirstDir(char *dir_path, char *first_dir){ //retorna um valor para som
   }
   return -1; //nao achou
 }
+
+
+/*
+int achaBarras (char *fullpath) {
+
+	int len = lengthChar(current_path) - 1;
+	int barras = 0;
+
+	while (len != -1) {
+
+		len--;
+		if (fullpath[len] == '/') {
+		    barras++;
+		}
+		if (barras == 2) {
+			//novo caminho começa em 0, termina em len, que ja é a barra
+			return len;
+
+		}
+	}
+	return len;
+}
+
+int relative2absolute(char *fullpath, char *name, char *dir_path){
+
+  char *absolute_path;
+  absolute_path = malloc (sizeof (char) * (lengthChar(current_path) + lengthChar(name) ));
+
+  int len = lengthChar(current_path) - 1;
+  int barra = 0;
+  dismemberString(fullpath, name, dir_path);
+
+  if(fullpath[0] == '/'){
+    return -1; //ABSOLUTE PATH <O>
+  }
+  else{
+    if(strstr(fullpath,"../\0")){ //path começa com dois pontos
+
+	//substring de fullpath ate onde esta a barra
+	barra = achaBarras(current_path);
+
+	strncpy(absolute_path, current_path, barra);
+	strcat(absolute_path, name);
+
+	int i = 0;
+
+	   while (i != lengthChar(absolute_path)) {
+
+		printf("%c\n ", *absolute_path);
+		absolute_path++;
+		i++;
+		}
+	return 0;
+      //printf("dois pontos!\n");
+
+*/
