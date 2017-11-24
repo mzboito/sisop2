@@ -106,8 +106,17 @@ int delete2 (char *filename){
 	if(target_dir == NULL){
 		return -1; //problem finding the directory
 	}
-	if(searchEntryPerName(target_dir, name, TYPEVAL_REGULAR) != EOF_FAT){ //found the name
-
+	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_REGULAR);
+	if(init_cluster != EOF_FAT){ //found the name
+		//printf("working on it\n");
+		printf("initial cluster %d\n", init_cluster);
+		//printf_FAT(10);
+		free_cluster(init_cluster);
+		//printf_FAT(10);
+		//wipe entry in directory
+		printf_directory(target_dir, 10);
+		wipeFromDirectory(target_dir, name, TYPEVAL_REGULAR);
+		printf_directory(target_dir, 10);
 		//TODO HERE WE DO THE MAGIC
 		return 0;
 	}else{

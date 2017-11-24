@@ -110,9 +110,18 @@ DWORD free_cluster(DWORD i){ //liberar um cluster ocupado na FAT
 	}
 	if(FAT[i] != EOF_FAT){
 		//if it is not the last file cluster and we free it, we will destroy the file clusters list
-		return ERROR_FAT; //return -1
+		DWORD this = i;
+		DWORD next = i;
+		while(FAT[this]!= EOF_FAT){ //while is not the next one
+				next = FAT[this];
+				printf("freeing cluster %d whose entry was %d\n", this, FAT[this]);
+				FAT[this] = FREE_FAT; //wipe this one
+				this = next;
+		}
+		FAT[this] = FREE_FAT;
+		return FREE_FAT; //return 0
 	}
-	FAT[i] = FREE_FAT;
+	FAT[i] = FREE_FAT; //if only one cluster, then just free it
 	return FREE_FAT; //return 0
 }
 
@@ -299,6 +308,23 @@ int structures_init(){ //this function tests if the superblock and fat were alre
 		return 0;
 	}
 	return 0;
+}
+
+int wipeFromDirectory(RECORD *dir, char *name, BYTE type){
+	int i = 0;
+	while(i < DIRsize){
+		if(strcmp(dir[i].name, name) == 0){
+			if(dir[i].TypeVal == type){
+				int first_free = findFreeDirEntry(dir);
+				if(first_free == -1){ //dir is full
+						first_free = DIRsize;
+				}
+				addEntry2Dir(dir, i, dir[first_free-1]); //put the last entry in the new space
+				dir[first_free-1].TypeVal = TYPEVAL_INVALIDO;
+			}
+		}
+		i++;
+	}
 }
 
 int write_cluster(DWORD data_cluster, BYTE *buffer){

@@ -12,7 +12,7 @@ int main() {
   printf_FAT(20);
   printf("\n\nNOW THE DIRECTORY\n\n");
   printf_directory(r,10);
-  char *path = "/dir1/file71.txt\0";
+  char *path = "/file1.txt\0";
   int handle = create2(path);
   printf("handle %d\n", handle);
   printf("\n\nFAT AFTER\n\n");
