@@ -54,22 +54,26 @@ int relative2absolute(char *fullpath, char *name, char *dir_path){
 
     }else{
       if(strstr(fullpath,"./\0")){ //path começa com um ponto
-        printf("um ponto!\n");
-        
+        fullpath = fullpath + 2;
+        char *from_relative = (char *)malloc(sizeof(char)*100);
+        dismemberString(fullpath, name, from_relative);
+        dir_path[0] = '\0'; //to wipe the trash
+        strcat(dir_path,current_path);
+        strcat(dir_path,from_relative);
       }else{ //path não começa com ponto
         if(strstr(fullpath,"/\0")){ //if there are directories inside
           char *from_relative = (char *)malloc(sizeof(char)*100);
           dismemberString(fullpath, name, from_relative);
           dir_path[0] = '\0'; //to wipe the trash
-          printf("cat %s\n", strcat(dir_path,current_path));
-          printf("cat %s\n", strcat(dir_path,from_relative));
+          strcat(dir_path,current_path);
+          strcat(dir_path,from_relative);
         }else{ //only the name in the fullpath
           strcpy(name, fullpath);
           strcpy(dir_path, current_path);
         }
-        return 0;
       }
     }
+    return 0;
   }
 }
 

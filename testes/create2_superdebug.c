@@ -42,7 +42,7 @@ int main() {
   printf("\n\ncurrent path: %s\n", current_path);
   printf("%s\n%s\n", name1, name2);
   char *filepath = "../file.txt\0";
-  char *filepath2 = "./file.txt\0";
+  char *filepath2 = "./treco/file.txt\0";
   char *filepath3 = "file.txt\0";
   char *filepath4 = "coiso/treco/file.txt\0";
   char *filepath5 = "../coiso/treco/file.txt\0";
@@ -52,9 +52,9 @@ int main() {
   printf("OUT %s, %s\n", name1, name2);
   relative2absolute(filepath4,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
-  /*relative2absolute(filepath3,name1,name2);
+  relative2absolute(filepath2,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
-  relative2absolute(filepath4,name1,name2);
+  /*relative2absolute(filepath4,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
   relative2absolute(filepath5,name1,name2);
   printf("OUT %s, %s\n", name1, name2);*/
