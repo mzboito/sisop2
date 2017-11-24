@@ -64,7 +64,7 @@ int main() {
   printf("OUT %s, %s\n", name1, name2);
 
   printf("HEREHREHRE\n\n\n\n");
-  path = "/dir1/../dir1/../dir1/./\0"; //isso tem que funcionar por incrível que pareça (dir1)
+  path = "/dir1/../dir1/../dir1/./file5.txt\0"; //isso tem que funcionar por incrível que pareça (dir1)
   r = get_dir(path);
   printf("\n\n");
   if(r == NULL){

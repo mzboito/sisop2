@@ -41,9 +41,8 @@ int readSuperBlock();
 DWORD searchEntryPerName(RECORD* dir, char *name, BYTE type);
 DWORD set_cluster(DWORD i);
 int structures_init();
+int write_cluster();
+int write_DIR(RECORD *dir);
 int write_FAT();
 
-/*
-int write_cluster();
-*/
 #endif

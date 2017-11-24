@@ -44,6 +44,19 @@ int getFileNameStart(char *fullpath){ //get name start for ABSOLUTE PATH
 	return (lenFixo - i + 2);
 }
 
+void getPointersFromPath(char *filename, char *name, char *dir){
+	if(isRelativePath(filename) == 1){
+			int length_path = strlen(filename);
+			char relative[length_path];
+			dismemberString(filename,name,relative);
+			dir[0] = '\0';
+			strcat(dir, current_path); //get path until that point
+			strcat(dir, relative);
+	}else{
+		dismemberString(filename,name,dir);
+	}
+}
+
 int isRelativePath(char *path){// return 1 se absoluto, 0 se relativo
 	if (*path == '/') {
 	   return 0;
@@ -51,7 +64,7 @@ int isRelativePath(char *path){// return 1 se absoluto, 0 se relativo
 	else return 1;
 }
 
-int removeFirstDir(char *dir_path, char *first_dir){ //retorna um valor para somar ao ponteiro do dir_path
+int deleteFirstDirEntry(char *dir_path, char *first_dir){ //retorna um valor para somar ao ponteiro do dir_path
   int len = strlen(dir_path);
   int i = 0;
   while(i < len){

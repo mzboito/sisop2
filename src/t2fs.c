@@ -28,26 +28,15 @@ FILE2 create2(char *filename){
 	if(nOpenFiles == MAX_OPEN_FILES){
 		return -1; //we do not have space for another open file
 	}
-	printf("number of open files: %d\n", nOpenFiles);
+	//printf("number of open files: %d\n", nOpenFiles);
 	int length_path = strlen(filename);
 	char * name = (char *)malloc(sizeof(char)*length_path);
 	char * dir = (char *)malloc(sizeof(char)*length_path);
 	RECORD *target_dir;
 	int position;
-	if(isRelativePath(filename) == 1){
-		//relative2absolute(filename,name,dir);
-			char * relative = (char *)malloc(sizeof(char)*length_path);
-			dismemberString(filename,name,relative);
-			dir[0] = '\0';
-			strcat(dir, current_path); //get path until that point
-			strcat(dir, relative);
-			//>>> transform in absolute path
-	}else{
-		printf("absolute path\n");
-		printf("entrada: %s\n", filename);
-		dismemberString(filename,name,dir);
-		printf("%s,%s\n", name, dir);
-	}
+	getPointersFromPath(filename, name, dir);
+	//printf("entrada: %s\n", filename);
+	//printf("%s,%s\n", name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
 		return -1; //problem finding the directory
@@ -56,7 +45,7 @@ FILE2 create2(char *filename){
 		return -1; //it there is already a file in this directory with same name
 	}
 	position = findFreeDirEntry(target_dir); //search for a free entry
-	printf("position: %d\n", position);
+	//printf("position: %d\n", position);
 	if(position == -1){
 		return -1; //full directory
 	}
@@ -65,7 +54,7 @@ FILE2 create2(char *filename){
 	if(cluster == EOF_FAT){ //FULL FAT
 			return -1;
 	}
-	printf("new cluster: %d\n", cluster);
+	//printf("new cluster: %d\n", cluster);
 	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
 			return -1; //allocation problem
 	}
@@ -75,11 +64,8 @@ FILE2 create2(char *filename){
 	strcpy(entry.name, name);
 	entry.bytesFileSize = 0;
 	entry.firstCluster = cluster;
-
 	//COLOCAR NOVO REGISTRO NO DIRETORIO
 	addEntry2Dir(target_dir, position, entry);
-	//printf("olha a entrada! %s\n", target_dir[position].name);
-
 	//CRIAR O HANDLE DO ARQUIVO
 	int handle = nOpenFiles;
 	if(handle < 0){
@@ -96,18 +82,39 @@ FILE2 create2(char *filename){
 	OPEN_FILES[handle].fileHandle = handle;
 	OPEN_FILES[handle].record = &target_dir[position];
 	OPEN_FILES[handle].dir_record = &target_dir[0];
-	printf("printf open\n");
-	printf_OPEN_FILES(handle);
 	//incrementa para o proximo handle
 	nOpenFiles++;
 	//ESCREVER NO DISCO
 	write_FAT();
+	write_DIR(target_dir);
 	return handle;
 }
 
 int delete2 (char *filename){
-	return -1;
+	if(structures_init()!= 0){
+		return -1;
+	}
+	int length_path = strlen(filename);
+	char * name = (char *)malloc(sizeof(char)*length_path);
+	char * dir = (char *)malloc(sizeof(char)*length_path);
+	RECORD *target_dir;
+	int position;
+	getPointersFromPath(filename, name, dir);
+	//printf("entrada: %s\n", filename);
+	//printf("%s,%s\n", name, dir);
+	target_dir = get_dir(dir);
+	if(target_dir == NULL){
+		return -1; //problem finding the directory
+	}
+	if(searchEntryPerName(target_dir, name, TYPEVAL_REGULAR) != EOF_FAT){ //found the name
+		//TODO HERE WE DO THE MAGIC
+		return 0;
+	}else{
+		return -1; //the file does not exists
+	}
 }
+
+//TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
 FILE2 open2 (char *filename){
 	return -1;
 }

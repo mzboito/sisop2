@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../include/apidisk.h"
 #include "../include/aux.h"
+#include "../include/utils.h"
 
 SUPERBLOCO *partitionInfo; //ponteiro para o superbloco
 DWORD *FAT; //lista da FAT
@@ -124,7 +125,7 @@ RECORD* get_dir(char *dirPath){
 	RECORD *current_local = ROOT;
 
 	while(strlen(dirPath)>0){
-		int j = removeFirstDir(dirPath, first_dir_name);
+		int j = deleteFirstDirEntry(dirPath, first_dir_name);
 		dirPath = dirPath + j;
 		if(strcmp(first_dir_name, "/\0") == 0){ //if it is the root
 			//printf("I hope\n");
@@ -300,6 +301,32 @@ int structures_init(){ //this function tests if the superblock and fat were alre
 	return 0;
 }
 
+int write_cluster(DWORD data_cluster, BYTE *buffer){
+	//this function iterates to write a whole cluster, instead of only a sector
+	DWORD firstSector = cluster2sector(data_cluster);
+	DWORD lastSector = firstSector + partitionInfo->SectorsPerCluster;
+	while(firstSector < lastSector){
+		if(write_sector(firstSector, buffer) != 0){ //write a sector
+			return -1; //stops if error writing
+		}
+		buffer = buffer + SECTOR_SIZE;//iterar o buffer
+		firstSector = firstSector + 1; //go to the next sector
+	}
+	return 0;
+}
+
+int write_DIR(RECORD *dir){
+	if(dir == NULL){
+		return -1; //problem with the pointer
+	}
+	DWORD cluster = dir[0].firstCluster;
+	if(cluster == FREE_FAT){
+		return -1;
+	}
+	write_cluster(cluster, (BYTE *)dir); //every dir uses only one cluster
+	return 0;
+}
+
 int write_FAT(){
 	if(structures_init() != 0){
 		return -1;
@@ -316,24 +343,3 @@ int write_FAT(){
 	FAT = initialPoint;
 	return 0;
 }
-
-/*
-
-int write_cluster(DWORD data_cluster, BYTE *buffer){ //TODO test this function
-	//this function iterates to write a whole cluster, instead of only a sector
-	DWORD firstSector = cluster2sector(data_cluster);
-	DWORD lastSector = firstSector + partitionInfo->SectorsPerCluster;
-	while(firstSector < lastSector){
-		if(write_sector(firstSector, buffer) != 0){ //write a sector
-			return -1; //stops if error writing
-		}
-		buffer = buffer + SECTOR_SIZE;//iterar o buffer
-		firstSector = firstSector + 1; //go to the next sector
-	}
-	return 0;
-}
-
-
-
-
-*/
