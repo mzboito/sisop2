@@ -37,13 +37,21 @@ int isRelativePath(char *path){// return 1 se absoluto, 0 se relativo
 }
 
 int relative2absolute(char *fullpath, char *name, char *dir_path){
-  //printf("%s", fullpath);
+  printf("to transform %s\n", fullpath);
+  /*char *absolute_path;
+  absolute_path = (char*)malloc (sizeof (char) * 100);
+  int len = strlen(current_path);
+  int barra = 0;
+  printf("aqui\n");*/
+  //dismemberString(fullpath, name, dir_path);
+
   if(fullpath[0] == '/'){
     return -1; //ABSOLUTE PATH <O>
   }
   else{
     if(strstr(fullpath,"../\0")){ //path começa com dois pontos
       printf("dois pontos!\n");
+
     }else{
       if(strstr(fullpath,"./\0")){ //path começa com um ponto
         printf("um ponto!\n");
@@ -54,19 +62,11 @@ int relative2absolute(char *fullpath, char *name, char *dir_path){
           printf("from relative %s\n", from_relative);
           printf("name %d\n", name);
           printf("current %s", current_path);
-
         }else{ //only the name in the fullpath
           printf("caso3\n");
-          int len = strlen(fullpath);
-          char *n = (char *)malloc(sizeof(char)*len);
-          strcpy(n, fullpath);
-          printf("name %s\n", n);
+          strcpy(name, fullpath);
           len = strlen(current_path);
-          char *d = (char *)malloc(sizeof(char)*len);
-          strcpy(d, current_path);
-          name = n;
-          dir_path = d;
-          printf("dir %s\n", d);
+          strcpy(dir_path, current_path);
         }
         return 0;
       }
@@ -97,7 +97,7 @@ int removeFirstDir(char *dir_path, char *first_dir){ //retorna um valor para som
 /*
 int achaBarras (char *fullpath) {
 
-	int len = lengthChar(current_path) - 1;
+	int len = strlen(current_path);
 	int barras = 0;
 
 	while (len != -1) {
@@ -114,37 +114,4 @@ int achaBarras (char *fullpath) {
 	}
 	return len;
 }
-
-int relative2absolute(char *fullpath, char *name, char *dir_path){
-
-  char *absolute_path;
-  absolute_path = malloc (sizeof (char) * (lengthChar(current_path) + lengthChar(name) ));
-
-  int len = lengthChar(current_path) - 1;
-  int barra = 0;
-  dismemberString(fullpath, name, dir_path);
-
-  if(fullpath[0] == '/'){
-    return -1; //ABSOLUTE PATH <O>
-  }
-  else{
-    if(strstr(fullpath,"../\0")){ //path começa com dois pontos
-
-	//substring de fullpath ate onde esta a barra
-	barra = achaBarras(current_path);
-
-	strncpy(absolute_path, current_path, barra);
-	strcat(absolute_path, name);
-
-	int i = 0;
-
-	   while (i != lengthChar(absolute_path)) {
-
-		printf("%c\n ", *absolute_path);
-		absolute_path++;
-		i++;
-		}
-	return 0;
-      //printf("dois pontos!\n");
-
 */

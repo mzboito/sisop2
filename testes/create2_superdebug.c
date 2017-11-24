@@ -46,8 +46,8 @@ int main() {
   char *filepath3 = "file.txt\0";
   char *filepath4 = "coiso/treco/file.txt\0";
   char *filepath5 = "../coiso/treco/file.txt\0";
-  name1 = "invalid\0";
-  name2 = "invalid\0";
+  name1 = (char *)malloc(sizeof(char)*100);
+  name2 = (char *)malloc(sizeof(char)*100);
   relative2absolute(filepath3,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
   /*relative2absolute(filepath2,name1,name2);
