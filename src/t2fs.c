@@ -98,7 +98,6 @@ int delete2 (char *filename){
 	char * name = (char *)malloc(sizeof(char)*length_path);
 	char * dir = (char *)malloc(sizeof(char)*length_path);
 	RECORD *target_dir;
-	int position;
 	getPointersFromPath(filename, name, dir);
 	//printf("entrada: %s\n", filename);
 	//printf("%s,%s\n", name, dir);
@@ -109,15 +108,15 @@ int delete2 (char *filename){
 	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_REGULAR);
 	if(init_cluster != EOF_FAT){ //found the name
 		//printf("working on it\n");
-		printf("initial cluster %d\n", init_cluster);
+		//printf("initial cluster %d\n", init_cluster);
 		//printf_FAT(10);
 		free_cluster(init_cluster);
 		//printf_FAT(10);
 		//wipe entry in directory
-		printf_directory(target_dir, 10);
+		//printf_directory(target_dir, 10);
 		wipeFromDirectory(target_dir, name, TYPEVAL_REGULAR);
-		printf_directory(target_dir, 10);
-		//TODO HERE WE DO THE MAGIC
+		write_FAT();
+		write_DIR(target_dir);
 		return 0;
 	}else{
 		return -1; //the file does not exists

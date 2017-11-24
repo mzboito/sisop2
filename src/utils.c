@@ -5,6 +5,25 @@
 #include "../include/t2fs.h"
 #include "../include/utils.h"
 
+int deleteFirstDirEntryStr(char *dir_path, char *first_dir){ //retorna um valor para somar ao ponteiro do dir_path
+  int len = strlen(dir_path);
+  int i = 0;
+  while(i < len){
+    if(dir_path[i] == '/'){ //found the end of the dir string
+      i++; //tamanho do que vai ser copiado
+      strncpy(first_dir, dir_path, i);
+      if(i > 1){ //if it is not root dir
+        first_dir[i-1] = '\0'; //remove last char (/)
+      }else{ //if it is the root dir
+        first_dir[1] = '\0';
+      }
+      return i;
+    }
+    i++;
+  }
+  return -1; //nao achou
+}
+
 void dismemberString(char *fullpath, char *name, char *dirpath){
 	int inicioName = getFileNameStart(fullpath);
   int fimDir = inicioName; //aponta para a última letra do nome do dir
@@ -62,25 +81,6 @@ int isRelativePath(char *path){// return 1 se absoluto, 0 se relativo
 	   return 0;
 	}
 	else return 1;
-}
-
-int deleteFirstDirEntry(char *dir_path, char *first_dir){ //retorna um valor para somar ao ponteiro do dir_path
-  int len = strlen(dir_path);
-  int i = 0;
-  while(i < len){
-    if(dir_path[i] == '/'){ //found the end of the dir string
-      i++; //tamanho do que vai ser copiado
-      strncpy(first_dir, dir_path, i);
-      if(i > 1){ //if it is not root dir
-        first_dir[i-1] = '\0'; //remove last char (/)
-      }else{ //if it is the root dir
-        first_dir[1] = '\0';
-      }
-      return i;
-    }
-    i++;
-  }
-  return -1; //nao achou
 }
 
 /*int relative2absolute(char *fullpath, char *name, char *dir_path){

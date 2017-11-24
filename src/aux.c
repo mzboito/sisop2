@@ -114,7 +114,6 @@ DWORD free_cluster(DWORD i){ //liberar um cluster ocupado na FAT
 		DWORD next = i;
 		while(FAT[this]!= EOF_FAT){ //while is not the next one
 				next = FAT[this];
-				printf("freeing cluster %d whose entry was %d\n", this, FAT[this]);
 				FAT[this] = FREE_FAT; //wipe this one
 				this = next;
 		}
@@ -134,7 +133,7 @@ RECORD* get_dir(char *dirPath){
 	RECORD *current_local = ROOT;
 
 	while(strlen(dirPath)>0){
-		int j = deleteFirstDirEntry(dirPath, first_dir_name);
+		int j = deleteFirstDirEntryStr(dirPath, first_dir_name);
 		dirPath = dirPath + j;
 		if(strcmp(first_dir_name, "/\0") == 0){ //if it is the root
 			//printf("I hope\n");
@@ -284,10 +283,6 @@ DWORD set_cluster(DWORD i){ //TODO WRITE IN THE DISK
 		return ERROR_FAT;
 	}
 	FAT[i] = EOF_FAT;
-	/*
-	if(write_FAT() != 0){
-		return EOF_FAT; //problem writing the FAT
-	}*/
   return FREE_FAT;
 }
 
@@ -310,7 +305,7 @@ int structures_init(){ //this function tests if the superblock and fat were alre
 	return 0;
 }
 
-int wipeFromDirectory(RECORD *dir, char *name, BYTE type){
+void wipeFromDirectory(RECORD *dir, char *name, BYTE type){
 	int i = 0;
 	while(i < DIRsize){
 		if(strcmp(dir[i].name, name) == 0){
