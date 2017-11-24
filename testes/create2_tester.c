@@ -45,6 +45,7 @@ int main() {
   relative2absolute("./file.txt",name1,name2);
   relative2absolute("file.txt",name1,name2);
   create2("/file.txt\0");
+  printf_OPEN_FILES(nOpenFiles);
 
   return 0;
 }

@@ -35,6 +35,7 @@ void initializeOPEN_FILES();
 int initializeROOT();
 int printf_directory(RECORD *dir, int count);
 int printf_FAT(int count);
+int printf_OPEN_FILES(int count);
 int read_cluster();
 int readSuperBlock();
 DWORD searchEntryPerName(RECORD* dir, char *name, BYTE type);

@@ -42,66 +42,62 @@ FILE2 create2(char *filename){
 		printf("entrada: %s\n", filename);
 		dismemberString(filename,name,dir);
 		printf("%s,%s\n", name, dir);
-		//?
-		target_dir = get_dir(dir);
-		if(target_dir == NULL){
-			return -1; //problem finding the directory
-		}
-		if(searchEntryPerName(target_dir, name, TYPEVAL_REGULAR) != EOF_FAT){
-			return -1; //it there is already a file in this directory with same name
-		}
-		position = findFreeDirEntry(target_dir); //search for a free entry
-		printf("position: %d\n", position);
-		if(position == -1){
-			return -1; //full directory
-		}
-		//PROCURAR UMA ENTRADA DA FAT
-		DWORD cluster = findFreeCluster();
-		if(cluster == EOF_FAT){ //FULL FAT
-				return -1;
-		}
-		printf("new cluster: %d\n", cluster);
-		if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
-				return -1; //allocation problem
-		}
-		//CRIAR NOVO REGISTRO
-		RECORD entry;
-		entry.TypeVal = TYPEVAL_REGULAR;
-		strcpy(entry.name, name);
-		entry.bytesFileSize = 0;
-		entry.firstCluster = cluster;
-
-		//COLOCAR NOVO REGISTRO NO DIRETORIO
-		addEntry2Dir(target_dir, position, entry);
-		//printf("olha a entrada! %s\n", target_dir[position].name);
-
-		//CRIAR O HANDLE DO ARQUIVO
-		int handle = nOpenFiles;
-		if(handle < 0){
-			free_cluster(cluster); //fix fat
-			return -1; //nOpenFiles init problem
-		}
-		//ADICIONAR O ARQUIVO NA LISTA DE ARQUIVOS ABERTOS
-		if(OPEN_FILES[handle].fileHandle != -1){ //if the position we have is not free
-			free_cluster(cluster); //fix fat
-			return -1; //major logical error
-		}
-		strcpy(OPEN_FILES[handle].name, name);
-		OPEN_FILES[handle].currentPointer = 0;
-		OPEN_FILES[handle].fileHandle = handle;
-		OPEN_FILES[handle].record = &target_dir[position];
-		OPEN_FILES[handle].dir_record = &target_dir[0];
-
-		//incrementa para o proximo handle
-		nOpenFiles++;
-		return handler;
-
-	}//<< tirar aqui quando descomentar o outro
-	/*
-
 	}
-	printf("position %d\n", position);*/
-	return -1;
+	target_dir = get_dir(dir);
+	if(target_dir == NULL){
+		return -1; //problem finding the directory
+	}
+	if(searchEntryPerName(target_dir, name, TYPEVAL_REGULAR) != EOF_FAT){
+		return -1; //it there is already a file in this directory with same name
+	}
+	position = findFreeDirEntry(target_dir); //search for a free entry
+	printf("position: %d\n", position);
+	if(position == -1){
+		return -1; //full directory
+	}
+	//PROCURAR UMA ENTRADA DA FAT
+	DWORD cluster = findFreeCluster();
+	if(cluster == EOF_FAT){ //FULL FAT
+			return -1;
+	}
+	printf("new cluster: %d\n", cluster);
+	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
+			return -1; //allocation problem
+	}
+	//CRIAR NOVO REGISTRO
+	RECORD entry;
+	entry.TypeVal = TYPEVAL_REGULAR;
+	strcpy(entry.name, name);
+	entry.bytesFileSize = 0;
+	entry.firstCluster = cluster;
+
+	//COLOCAR NOVO REGISTRO NO DIRETORIO
+	addEntry2Dir(target_dir, position, entry);
+	//printf("olha a entrada! %s\n", target_dir[position].name);
+
+	//CRIAR O HANDLE DO ARQUIVO
+	int handle = nOpenFiles;
+	if(handle < 0){
+		free_cluster(cluster); //fix fat
+		return -1; //nOpenFiles init problem
+	}
+	//ADICIONAR O ARQUIVO NA LISTA DE ARQUIVOS ABERTOS
+	if(OPEN_FILES[handle].fileHandle != -1){ //if the position we have is not free
+		free_cluster(cluster); //fix fat
+		return -1; //major logical error
+	}
+	strcpy(OPEN_FILES[handle].name, name);
+	OPEN_FILES[handle].currentPointer = 0;
+	OPEN_FILES[handle].fileHandle = handle;
+	OPEN_FILES[handle].record = &target_dir[position];
+	OPEN_FILES[handle].dir_record = &target_dir[0];
+	printf("printf open\n");
+	printf_OPEN_FILES(handle);
+	//incrementa para o proximo handle
+	nOpenFiles++;
+	//ESCREVER NO DISCO
+	write_FAT();
+	return handle;
 }
 
 int delete2 (char *filename){

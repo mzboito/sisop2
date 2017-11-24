@@ -164,10 +164,8 @@ int initializeFAT(){
 }
 
 void initializeOPEN_FILES(){
-	int i;
+	int i = 0;
 	while(i < MAX_OPEN_FILES){
-		//File_descriptor *d = malloc(sizeof(File_descriptor));
-		//d->fileHandle = -1; //init every entry with -1 value (invalid handle value)
 		OPEN_FILES[i].fileHandle = -1;
 		i++;
 	}
@@ -215,6 +213,22 @@ int printf_FAT(int count){
 	printf("FREE_FAT %08x\n", FREE_FAT);
 	printf("ERROR_FAT %08x\n", ERROR_FAT);
 	printf("EOF_FAT %08x\n", EOF_FAT);
+	return 0;
+}
+
+int printf_OPEN_FILES(int count){
+	if((count > MAX_OPEN_FILES)||(count > nOpenFiles)){
+		printf("%d, %d\n", count, nOpenFiles);
+		return -1;
+	}
+	int i = 0;
+	while(i < count){
+		printf("current pointer: %d\n", OPEN_FILES[i].currentPointer);
+		printf("handle: %d\n", OPEN_FILES[i].fileHandle);
+		printf("name in the record: %s\n", OPEN_FILES[i].record->name);
+		printf("dir size: %08x\n", OPEN_FILES[i].dir_record->bytesFileSize);
+		i++;
+	}
 	return 0;
 }
 
