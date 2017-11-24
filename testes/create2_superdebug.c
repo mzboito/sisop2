@@ -41,7 +41,7 @@ int main() {
   }
   printf("\n\ncurrent path: %s\n", current_path);
   printf("%s\n%s\n", name1, name2);
-  char *filepath = "../file.txt\0";
+  char *filepath = "../trololo/file.txt\0";
   char *filepath2 = "./treco/file.txt\0";
   char *filepath3 = "file.txt\0";
   char *filepath4 = "coiso/treco/file.txt\0";
@@ -50,14 +50,18 @@ int main() {
   name2 = (char *)malloc(sizeof(char)*100);
   relative2absolute(filepath3,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
+  current_path = "/dir1/\0";
   relative2absolute(filepath4,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
+  current_path = "/\0";
   relative2absolute(filepath2,name1,name2);
   printf("OUT %s, %s\n", name1, name2);
-  /*relative2absolute(filepath4,name1,name2);
-  printf("OUT %s, %s\n", name1, name2);
+  current_path = "/90/20/120/\0";
   relative2absolute(filepath5,name1,name2);
-  printf("OUT %s, %s\n", name1, name2);*/
+  printf("OUT %s, %s\n", name1, name2);
+  current_path = "/1/2/3/4/5/6/7/\0";
+  relative2absolute(filepath,name1,name2);
+  printf("OUT %s, %s\n", name1, name2);
   //create2("/file.txt\0");
   //printf_OPEN_FILES(nOpenFiles);
   return 0;

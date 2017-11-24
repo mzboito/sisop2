@@ -15,6 +15,21 @@ void dismemberString(char *fullpath, char *name, char *dirpath){
   dirpath[fimDir] = '\0';
 }
 
+void eraseLastDirString(char *string, char *new_string){
+  int i = strlen(string);
+  if(i == 1){ //root
+    strncpy(new_string, string, i);
+  }
+  i--; //does not count the final / e.g.: /dir1/dir2/ -> /dir1/
+  while(i > 0){
+    i--;
+    if(string[i] == '/'){
+      break;
+    }
+  }
+  strncpy(new_string, string, i+1);
+}
+
 int getFileNameStart(char *fullpath){ //get name start for ABSOLUTE PATH
 	int len = strlen(fullpath) -1; //tamanho do fullpath vai de 0 até len
 	int lenFixo = len;
@@ -37,32 +52,30 @@ int isRelativePath(char *path){// return 1 se absoluto, 0 se relativo
 }
 
 int relative2absolute(char *fullpath, char *name, char *dir_path){
-  printf("to transform %s\n", fullpath);
-  /*char *absolute_path;
-  absolute_path = (char*)malloc (sizeof (char) * 100);
-  int len = strlen(current_path);
-  int barra = 0;
-  printf("aqui\n");*/
-  //dismemberString(fullpath, name, dir_path);
-
   if(fullpath[0] == '/'){
     return -1; //ABSOLUTE PATH <O>
   }
   else{
     if(strstr(fullpath,"../\0")){ //path começa com dois pontos
-      printf("dois pontos!\n");
-
+      fullpath = fullpath + 3;
+      char *from_relative = (char *)malloc(sizeof(char)*300);
+      char *new_current = (char *)malloc(sizeof(char)*300);
+      dismemberString(fullpath, name, from_relative);
+      eraseLastDirString(current_path, new_current);
+      dir_path[0] = '\0'; //to wipe the trash
+      strcat(dir_path,new_current);
+      strcat(dir_path,from_relative);
     }else{
       if(strstr(fullpath,"./\0")){ //path começa com um ponto
         fullpath = fullpath + 2;
-        char *from_relative = (char *)malloc(sizeof(char)*100);
+        char *from_relative = (char *)malloc(sizeof(char)*300);
         dismemberString(fullpath, name, from_relative);
         dir_path[0] = '\0'; //to wipe the trash
         strcat(dir_path,current_path);
         strcat(dir_path,from_relative);
       }else{ //path não começa com ponto
         if(strstr(fullpath,"/\0")){ //if there are directories inside
-          char *from_relative = (char *)malloc(sizeof(char)*100);
+          char *from_relative = (char *)malloc(sizeof(char)*300);
           dismemberString(fullpath, name, from_relative);
           dir_path[0] = '\0'; //to wipe the trash
           strcat(dir_path,current_path);
