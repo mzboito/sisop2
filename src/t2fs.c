@@ -28,7 +28,7 @@ FILE2 create2(char *filename){
 	if(nOpenFiles == MAX_OPEN_FILES){
 		return -1; //we do not have space for another open file
 	}
-	//printf("number of open files: %d\n", nOpenFiles);
+	printf("number of open files: %d\n", nOpenFiles);
 	int length_path = strlen(filename);
 	char * name = (char *)malloc(sizeof(char)*length_path);
 	char * dir = (char *)malloc(sizeof(char)*length_path);
@@ -38,8 +38,10 @@ FILE2 create2(char *filename){
 		relative2absolute(filename,name,dir);
 			//>>> transform in absolute path
 	}else{
+		printf("absolute path\n");
+		printf("entrada: %s\n", filename);
 		dismemberString(filename,name,dir);
-		//printf("%s,%s\n", name, dir);
+		printf("%s,%s\n", name, dir);
 		//?
 		target_dir = get_dir(dir);
 		if(target_dir == NULL){
@@ -49,7 +51,7 @@ FILE2 create2(char *filename){
 			return -1; //it there is already a file in this directory with same name
 		}
 		position = findFreeDirEntry(target_dir); //search for a free entry
-		//printf("position: %d\n", position);
+		printf("position: %d\n", position);
 		if(position == -1){
 			return -1; //full directory
 		}
@@ -58,27 +60,18 @@ FILE2 create2(char *filename){
 		if(cluster == EOF_FAT){ //FULL FAT
 				return -1;
 		}
-		//printf("new cluster: %d\n", cluster);
+		printf("new cluster: %d\n", cluster);
 		if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
-				return -1; //allocation or writing problem
+				return -1; //allocation problem
 		}
-		//CRIAR UMA ESTRUTURA PARA O NOVO REGISTRO
-
+		//COLOCAR NOVO REGISTRO NO DIRETORIO
+		target_dir[position].TypeVal = TYPEVAL_REGULAR;
+		strcpy(target_dir[position].name, name);
+		target_dir[position].bytesFileSize = 0;
+		target_dir[position].firstCluster = cluster;
 
 	}//<< tirar aqui quando descomentar o outro
 	/*
-	/*struct t2fs_record *new_record = malloc(sizeof(struct t2fs_record));
-	new_record->TypeVal = TYPEVAL_REGULAR;
-	strcpy(new_record->name, name); //copies the name for the STRUCTURE
-	new_record->bytesFileSize = 0; //a file starts empty
-	new_record->firstCluster = cluster;
-	*/
-	//printf("\n\n%d\n", ROOT[position].firstCluster);
-	//COLAR NOVO REGISTRO NO DIRETORIO
-	//target_dir[position] = new_record;
-
-	//target_dir[position] = malloc(sizeof(struct t2fs_record));
-	/*printf("before\n");
 	addEntry2Dir(ROOT, position, new_record);
 	printf("%d\n", ROOT[position].firstCluster);
 	printf("%d\n", target_dir[0].TypeVal);

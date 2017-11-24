@@ -7,9 +7,11 @@
 void dismemberString(char *fullpath, char *name, char *dirpath){
 	int inicioName = getFileNameStart(fullpath);
   int fimDir = inicioName; //aponta para a última letra do nome do dir
-	int len = strlen(fullpath) -1; //tamanho do fullpath vai de 0 até len
-	strncpy(name, &fullpath[inicioName], len);
+	int len = strlen(fullpath); //tamanho do fullpath vai de 0 até len
+  strncpy(name, &fullpath[inicioName], len);
+  name[len] = '\0';
   strncpy(dirpath, &fullpath[0],fimDir);
+  dirpath[fimDir] = '\0';
 }
 
 int getFileNameStart(char *fullpath){ //get name start for ABSOLUTE PATH

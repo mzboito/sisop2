@@ -23,6 +23,7 @@ extern DWORD FATtotalSize;
 extern DWORD DIRsize; //in number of entries
 extern char * current_path;
 
+int addEntry2Dir(RECORD *dir, int position, RECORD *entry);
 DWORD cluster2sector();
 void debugStructures();
 DWORD findFreeCluster();

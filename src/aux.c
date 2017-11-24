@@ -16,6 +16,10 @@ DWORD FATtotalSize;
 DWORD DIRsize; //in number of entries
 char * current_path;
 
+int addEntry2Dir(RECORD *dir, int position, RECORD *entry){
+	return 0;
+}
+
 DWORD cluster2sector(DWORD data_cluster){
 	DWORD initialDataSector = partitionInfo->DataSectorStart;
 	DWORD displacement = partitionInfo->SectorsPerCluster * data_cluster;
@@ -315,13 +319,6 @@ int write_cluster(DWORD data_cluster, BYTE *buffer){ //TODO test this function
 }
 
 
-int addEntry2Dir(struct t2fs_record *dir, int position, struct t2fs_record *entry){
-	printf("before print\n");
-	printf("%08x\n", ROOT[1].firstCluster);
-	printf("%08x\n", dir[1].firstCluster);
-	dir[position].firstCluster = entry->firstCluster;
-	printf("%08x\n", dir[position].firstCluster);
-	printf("%08x\n", ROOT[position].firstCluster);
-}
+
 
 */
