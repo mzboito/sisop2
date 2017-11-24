@@ -17,6 +17,7 @@ int main() {
   printf("handle %d\n", handle);
   printf("\n\nFAT AFTER\n\n");
   printf_FAT(20);
+  printf_directory(r,10);
   printf("Open files registers:\n");
   printf_OPEN_FILES(handle+1);
 

@@ -107,6 +107,7 @@ int delete2 (char *filename){
 		return -1; //problem finding the directory
 	}
 	if(searchEntryPerName(target_dir, name, TYPEVAL_REGULAR) != EOF_FAT){ //found the name
+
 		//TODO HERE WE DO THE MAGIC
 		return 0;
 	}else{

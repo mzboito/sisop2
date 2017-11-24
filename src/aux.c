@@ -93,7 +93,7 @@ int findFreeDirEntry(RECORD *dir){ //get first free position on directory
 	int i = 0;
 	//all directories use only one CLUSTER each
 	while(i < DIRsize){ //iterates until it finds a free entry in the directory
-		if(dir[i].firstCluster == FREE_FAT){
+		if(dir[i].TypeVal == TYPEVAL_INVALIDO){
 			return i;
 		}
 		i++;
