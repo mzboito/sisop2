@@ -64,41 +64,41 @@ FILE2 create2(char *filename){
 		if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
 				return -1; //allocation problem
 		}
+		//CRIAR NOVO REGISTRO
+		RECORD entry;
+		entry.TypeVal = TYPEVAL_REGULAR;
+		strcpy(entry.name, name);
+		entry.bytesFileSize = 0;
+		entry.firstCluster = cluster;
+
 		//COLOCAR NOVO REGISTRO NO DIRETORIO
-		target_dir[position].TypeVal = TYPEVAL_REGULAR;
-		strcpy(target_dir[position].name, name);
-		target_dir[position].bytesFileSize = 0;
-		target_dir[position].firstCluster = cluster;
+		addEntry2Dir(target_dir, position, entry);
+		//printf("olha a entrada! %s\n", target_dir[position].name);
+
+		//CRIAR O HANDLE DO ARQUIVO
+		int handle = nOpenFiles;
+		if(handle < 0){
+			free_cluster(cluster); //fix fat
+			return -1; //nOpenFiles init problem
+		}
+		//ADICIONAR O ARQUIVO NA LISTA DE ARQUIVOS ABERTOS
+		if(OPEN_FILES[handle].fileHandle != -1){ //if the position we have is not free
+			free_cluster(cluster); //fix fat
+			return -1; //major logical error
+		}
+		strcpy(OPEN_FILES[handle].name, name);
+		OPEN_FILES[handle].currentPointer = 0;
+		OPEN_FILES[handle].fileHandle = handle;
+		OPEN_FILES[handle].record = &target_dir[position];
+		OPEN_FILES[handle].dir_record = &target_dir[0];
+
+		//incrementa para o proximo handle
+		nOpenFiles++;
+		return handler;
 
 	}//<< tirar aqui quando descomentar o outro
 	/*
-	addEntry2Dir(ROOT, position, new_record);
-	printf("%d\n", ROOT[position].firstCluster);
-	printf("%d\n", target_dir[0].TypeVal);
 
-	target_dir[position].TypeVal = TYPEVAL_REGULAR;
-	strcpy(target_dir[position].name, name);
-	target_dir[position].bytesFileSize = 0;
-	target_dir[position].firstCluster = cluster;
-
-	printf("is it here?\n");*/
-
-	//CRIAR O HANDLER DO ARQUIVO
-	/*int handler = nOpenFiles;
-
-	//ADICIONAR O ARQUIVO NA LISTA DE ARQUIVOS ABERTOS
-	if(OPEN_FILES[handler].fileHandle != -1){ //if the position we have is not free
-			free_cluster(cluster);
-			return -1; //major logical error
-	}
-	strcpy(OPEN_FILES[handler].name, name);
-	OPEN_FILES[handler].currentPointer = 0;
-	OPEN_FILES[handler].fileHandle = nOpenFiles;
-	OPEN_FILES[handler].record = &target_dir[position];
-	OPEN_FILES[handler].dir_record = &target_dir[0];
-
-	nOpenFiles++;
-	return handler;
 	}
 	printf("position %d\n", position);*/
 	return -1;

@@ -16,8 +16,11 @@ DWORD FATtotalSize;
 DWORD DIRsize; //in number of entries
 char * current_path;
 
-int addEntry2Dir(RECORD *dir, int position, RECORD *entry){
-	return 0;
+void addEntry2Dir(RECORD *dir, int position, RECORD entry){
+	dir[position].TypeVal = entry.TypeVal;
+	strcpy(dir[position].name, entry.name);
+	dir[position].bytesFileSize = entry.bytesFileSize;
+	dir[position].firstCluster = entry.firstCluster;
 }
 
 DWORD cluster2sector(DWORD data_cluster){
@@ -95,6 +98,21 @@ int findFreeDirEntry(RECORD *dir){ //get first free position on directory
 		i++;
 	}
 	return -1;
+}
+
+DWORD free_cluster(DWORD i){ //liberar um cluster ocupado na FAT
+	if (FAT[i] == ERROR_FAT){ //cannot free an error entry
+		return ERROR_FAT; //return -1
+	}
+	if(FAT[i] == FREE_FAT){ //cannot free a free fat
+		return ERROR_FAT; //return -1
+	}
+	if(FAT[i] != EOF_FAT){
+		//if it is not the last file cluster and we free it, we will destroy the file clusters list
+		return ERROR_FAT; //return -1
+	}
+	FAT[i] = FREE_FAT;
+	return FREE_FAT; //return 0
 }
 
 RECORD* get_dir(char *dirPath){
@@ -285,24 +303,6 @@ int write_FAT(){
 }
 
 /*
-DWORD free_cluster(DWORD i){ //TODO WRITE IN THE DISK
-	//liberar um cluster ocupado na FAT
-	if (FAT[i] == ERROR_FAT){ //cannot free an error entry
-		return ERROR_FAT;
-	}
-	if(FAT[i] == FREE_FAT){ //cannot free a free fat
-		return ERROR_FAT;
-	}
-	if(FAT[i] != EOF_FAT){
-		//if it is not the last file cluster and we free it, we will destroy the file clusters list
-		return ERROR_FAT;
-	}
-	FAT[i] = FREE_FAT;
-	//printf("Free cluster value: %08x\n",FAT[i]);
-	return FREE_FAT; //return 0;
-
-}
-
 
 int write_cluster(DWORD data_cluster, BYTE *buffer){ //TODO test this function
 	//this function iterates to write a whole cluster, instead of only a sector

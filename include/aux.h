@@ -23,11 +23,12 @@ extern DWORD FATtotalSize;
 extern DWORD DIRsize; //in number of entries
 extern char * current_path;
 
-int addEntry2Dir(RECORD *dir, int position, RECORD *entry);
+void addEntry2Dir(RECORD *dir, int position, RECORD entry);
 DWORD cluster2sector();
 void debugStructures();
 DWORD findFreeCluster();
 int findFreeDirEntry(struct t2fs_record *dir);
+DWORD free_cluster(DWORD i);
 RECORD* get_dir(char *dirPath);
 int initializeFAT();
 void initializeOPEN_FILES();
@@ -43,6 +44,5 @@ int write_FAT();
 
 /*
 int write_cluster();
-DWORD free_cluster(DWORD i);
 */
 #endif
