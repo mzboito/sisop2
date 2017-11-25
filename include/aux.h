@@ -27,6 +27,7 @@ void addEntry2Dir(RECORD *dir, int position, RECORD entry);
 DWORD cluster2sector();
 void createNewDir(RECORD *new_dir, RECORD dir_entry, RECORD father_entry);
 void debugStructures();
+int findEntryInDirectory(RECORD *dir, char *entry_name, BYTE type);
 DWORD findFreeCluster();
 int findFreeDirEntry(struct t2fs_record *dir);
 DWORD free_cluster(DWORD i);

@@ -72,8 +72,7 @@ FILE2 create2(char *filename){
 	//CRIAR O HANDLE DO ARQUIVO
 	int handle = nOpenFiles;
 	if(handle < 0){
-		free_cluster(cluster); //problem fat
-
+		free_cluster(cluster);
 		return -1; //nOpenFiles init problem
 	}
 	//ADICIONAR O ARQUIVO NA LISTA DE ARQUIVOS ABERTOS
@@ -93,10 +92,8 @@ FILE2 create2(char *filename){
 	if((write_FAT()!=0)||(write_DIR(target_dir) !=0)){
 		free_cluster(cluster);
 		target_dir[position].TypeVal = TYPEVAL_INVALIDO;
-
 		return -1;
 	}
-
 	return handle;
 }
 
@@ -242,23 +239,35 @@ FILE2 open2 (char *filename){
 	if(nOpenFiles == MAX_OPEN_FILES){
 		return -1; //we do not have space for another open file
 	}
-	/*Fun��o:	Abre um arquivo existente no disco.
-		O nome desse novo arquivo � aquele informado pelo par�metro "filename".
-		Ao abrir um arquivo, o contador de posi��o do arquivo (current pointer) deve ser colocado na posi��o zero.
-		A fun��o deve retornar o identificador (handle) do arquivo.
-		Esse handle ser� usado em chamadas posteriores do sistema de arquivo para fins de manipula��o do arquivo criado.
-		Todos os arquivos abertos por esta chamada s�o abertos em leitura e em escrita.
-		O ponto em que a leitura, ou escrita, ser� realizada � fornecido pelo valor current_pointer (ver fun��o seek2).
-
-	Entra:	filename -> nome do arquivo a ser apagado.
-
-	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o handle do arquivo (n�mero positivo)
-		Em caso de erro, deve ser retornado um valor negativo*/
-
-
-	//achar caminho, recuperar dir
-
-	return -1;
+	int length_path = strlen(filename);
+	char name[length_path];
+	char dir[length_path];
+	RECORD *target_dir;
+	int position;
+	getPointersFromPath(filename, name, dir);
+	//printf("create pointers %s %s %s\n", filename, name, dir);
+	target_dir = get_dir(dir);
+	if(target_dir == NULL){
+		//printf("MAS MEU DEUS FILHO\n");
+		return -1; //problem finding the directory
+	}
+	position = findEntryInDirectory(target_dir, name, TYPEVAL_REGULAR);
+	if(position == -1){ //did not found the entry in the directory =(
+			//printf("oieeee\n");
+			return -1; //problem
+	}
+	int handle = nOpenFiles;
+	if(OPEN_FILES[handle].fileHandle != -1){ //if the position we have is not free
+		return -1; //major logical error
+	}
+	//init for the new open file
+	strcpy(OPEN_FILES[handle].name, name);
+	OPEN_FILES[handle].currentPointer = 0;
+	OPEN_FILES[handle].fileHandle = handle;
+	OPEN_FILES[handle].record = &target_dir[position];
+	OPEN_FILES[handle].dir_record = &target_dir[0];
+	nOpenFiles++;
+	return handle;
 }
 
 

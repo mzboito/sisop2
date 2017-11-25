@@ -87,6 +87,19 @@ void debugStructures(){
   }
 }
 
+int findEntryInDirectory(RECORD *dir, char *entry_name, BYTE type){
+	int i = 2;
+	while(i < DIRsize){
+		if(strcmp(dir[i].name, entry_name) == 0){
+			if(dir[i].TypeVal == type){ //found it
+				return i;
+			}
+		}
+		i++;
+	}
+	return -1;
+}
+
 DWORD findFreeCluster(){//encontrar cluster livre
 	if(structures_init() != 0){
 		return -1; //problem initializing
@@ -282,16 +295,20 @@ int printf_FAT(int count){
 }
 
 int printf_OPEN_FILES(int count){
-	if((count > MAX_OPEN_FILES)||(count > nOpenFiles)){
-		printf("%d, %d\n", count, nOpenFiles);
+	if(count > MAX_OPEN_FILES){
+		//printf("%d, %d\n", count, nOpenFiles);
 		return -1;
 	}
 	int i = 0;
 	while(i < count){
 		printf("current pointer: %d\n", OPEN_FILES[i].currentPointer);
 		printf("handle: %d\n", OPEN_FILES[i].fileHandle);
-		printf("name in the record: %s\n", OPEN_FILES[i].record->name);
-		printf("dir size: %08x\n", OPEN_FILES[i].dir_record->bytesFileSize);
+		if(OPEN_FILES[i].fileHandle > -1){
+			printf("name in the record: %s\n", OPEN_FILES[i].record->name);
+			printf("dir size: %08x\n", OPEN_FILES[i].dir_record->bytesFileSize);
+		}else{
+			printf("not allocated record\n");
+		}
 		i++;
 	}
 	return 0;
