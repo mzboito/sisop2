@@ -149,6 +149,7 @@ RECORD* get_dir(char *dirPath){
 	//printf("dir path %s\n", dirPath);
 	//printf_directory(current_local,8);
 	while(strlen(remain)>0){
+
 		//printf("remain >%s< and its size >%d<\n", remain, strlen(remain));
 		j = deleteFirstDirEntryStr(remain, first_dir_name);
 		if(j < 0){ //dit not found
@@ -159,12 +160,12 @@ RECORD* get_dir(char *dirPath){
 			printf_directory(current_local, 10);
 			return NULL;
 		}
+		remain = remain + j;
 		//printf("%s %s\n", remain, remain + j);
 		//printf("lens %d %d\n", strlen(remain), strlen(remain+j));
 		//printf("after delete\n");
 		//printf("first %s, rest %s\n", first_dir_name, remain);
 		//printf("after access\n");
-		remain = remain + j;
 		if(strcmp(first_dir_name, "/\0") == 0){ //if it is the root
 			//printf("forever here\n");
 			current_local = ROOT;
@@ -183,7 +184,11 @@ RECORD* get_dir(char *dirPath){
 			}else{
 				RECORD *r = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
 				read_cluster(cluster, r); //read the new directory
+				//printf("cluster %08x\n", current_local[0].firstCluster);
 				current_local = r;
+				//printf_directory(current_local, 1);
+				//printf("length %d\n", strlen(remain));
+				//printf("remain wtf %s\n", remain);
 			}
 		}
 	}

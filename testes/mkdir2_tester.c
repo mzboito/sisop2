@@ -12,7 +12,7 @@ int main() {
   //THIS PART CREATES AND DELETES A FILE
   //printf("FAT BEFORE\n\n");
   //printf_directory(r,10);
-  value = create2("/olhaeuaqui1.txt\0");
+  /*value = create2("/olhaeuaqui1.txt\0");
   printf("return: %d\n", value);
   printf_FAT(20);
   printf_directory(r,10);
@@ -21,7 +21,7 @@ int main() {
   value = delete2("olhaeuaqui1.txt\0");
   printf("return: %d\n", value);
   printf_FAT(20);
-  printf_directory(r,10);
+  printf_directory(r,10);*/
   //printf_FAT(20);
   //NOW WITH WEIRD PATHS
 
@@ -51,14 +51,13 @@ int main() {
     r = get_dir("./dir1/");
     printf("refresh\n");
     printf_directory(r,10);
-    //char *path = "/newdir2\0";
 
   }*/
-
-  /*
-  int value = mkdir2(path);
+  //MKDIR TESTS
+  //ABSOLUTE
+  /*char *path = "/newdir2\0";
+  value = mkdir2(path);
   printf("return: %d\n", value);
-  value = 0;
   if(value == -1){
     printf("ERROR CREATING\n");
   }else{
@@ -74,9 +73,74 @@ int main() {
       printf_directory(r,6);
 
     }
+  }*/
+  //NOW LET'S GET CRAZY
+  /*char *path = "../dir1/newdir\0";
+  printf("THE DIR BEFORE\n\n");
+  r = get_dir("dir1/\0");
+  printf_directory(r, 10);
+  value = mkdir2(path);
+  printf("return: %d\n", value);
+  value = 0;
+  if(value == -1){
+    printf("ERROR CREATING\n");
+  }else{
+    printf("\n\nTHE DIRECTORY AFTER\n\n");
+    r = get_dir("dir1/\0");
+    printf_directory(r,10);
+    printf("THE NEW DIR\n\n\n");
+    r = get_dir("dir1/newdir\0");
+    printf("\n\n");
+    printf("now let's remove it\n");
+    value = rmdir2("./dir1/../dir1/newdir\0");
+    if(value == -1){
+      printf("\nERROR REMOVING IT\n");
+      printf("return: %d\n", value);
+    }else{
+      r = get_dir("../dir1/\0");
+      printf("\n\nTHE DIRECTORY AFTER\n\n");
+      printf_directory(r,10);
+    }
+  }*/
+  //LAST TEST: CANNOT REMOVE A DIRECTORY WITH STUFF INSIDE
+  char *path = "../dir1/newdir\0";
+  //printf("THE DIR BEFORE\n\n");
+  //r = get_dir("dir1/\0");
+  //printf_directory(r, 10);
+  value = mkdir2(path);
+  printf("return: %d\n", value);
+  //value = 0;
+  if(value == -1){
+    printf("ERROR CREATING\n");
+  }else{
+    printf("\n\nTHE DIRECTORY AFTER\n\n");
+    r = get_dir("dir1/\0");
+    printf_directory(r,10);
+    printf("THE NEW DIR\n\n\n");
+    r = get_dir("dir1/newdir\0");
+    printf_directory(r,4);
+    printf("\n\n");
+    value = create2("../dir1/../dir1/./newdir/pacoca.txt");
+    if(value == -1){
+      printf("problem creating file inside new directory");
+    }
+    else{
+      r = get_dir("dir1/newdir\0");
+      printf_directory(r,4);
+      printf("now let's remove it\n");
+      value = rmdir2("./dir1/../dir1/newdir\0");
+      if(value == -1){
+        printf("\nERROR REMOVING IT\n");
+        printf("return: %d\n", value);
+      }else{
+        r = get_dir("../dir1/\0");
+        printf("\n\nTHE DIRECTORY AFTER\n\n");
+        printf_directory(r,10);
+      }
+    }
   }
 
-  */
+
 
   return 0;
 }

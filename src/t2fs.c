@@ -109,7 +109,6 @@ int delete2 (char *filename){
 	char dir[length_path];
 	RECORD *target_dir;
 	getPointersFromPath(filename, name, dir);
-	//printf("%s %s %s\n", filename, name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
 		printf("nao achou diretorio\n");
@@ -195,21 +194,23 @@ int rmdir2 (char *pathname){
 	char dir[length_path];
 	RECORD *target_dir;
 	getPointersFromPath(pathname, name, dir);
+	//printf("%s %s %s\n", pathname, name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
 		return -1; //problem finding the directory
 	}
 	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_DIRETORIO);
 	if(init_cluster != EOF_FAT){ //found the name
-		printf("found the name\n");
+		//printf("found the name\n");
 		//ok so now let's open the directory we want to delete for a second
+		//printf("pathname at this moment %s\n", pathname);
 		RECORD *this_dir = get_dir(pathname);
 		if(this_dir == NULL){ //reeeeeeeeeeeelly wrong
-			printf("cannot open it\n");
-			printf("the pathname %s\n", pathname);
+			//printf("cannot open it\n");
+			//printf("the pathname %s\n", pathname);
 			return -1; //problem finding the directory
 		}
-		printf("before is not empty\n");
+		//printf("before is not empty\n");
 		if(isNotEmpty(this_dir) != 0){
 			return -1;
 		}
