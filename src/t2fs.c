@@ -35,8 +35,6 @@ FILE2 create2(char *filename){
 	RECORD *target_dir;
 	int position;
 	getPointersFromPath(filename, name, dir);
-	//printf("entrada: %s\n", filename);
-	//printf("%s,%s\n", name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
 		return -1; //problem finding the directory
@@ -99,21 +97,13 @@ int delete2 (char *filename){
 	char * dir = (char *)malloc(sizeof(char)*length_path);
 	RECORD *target_dir;
 	getPointersFromPath(filename, name, dir);
-	//printf("entrada: %s\n", filename);
-	//printf("%s,%s\n", name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
 		return -1; //problem finding the directory
 	}
 	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_REGULAR);
 	if(init_cluster != EOF_FAT){ //found the name
-		//printf("working on it\n");
-		//printf("initial cluster %d\n", init_cluster);
-		//printf_FAT(10);
 		free_cluster(init_cluster);
-		//printf_FAT(10);
-		//wipe entry in directory
-		//printf_directory(target_dir, 10);
 		wipeFromDirectory(target_dir, name, TYPEVAL_REGULAR);
 		write_FAT();
 		write_DIR(target_dir);
@@ -121,6 +111,58 @@ int delete2 (char *filename){
 	}else{
 		return -1; //the file does not exists
 	}
+}
+
+int mkdir2 (char *pathname){
+	if(structures_init()!= 0){
+		return -1; //problem init structures
+	}
+	int length_path = strlen(pathname);
+	char * name = (char *)malloc(sizeof(char)*length_path);
+	char * dir = (char *)malloc(sizeof(char)*length_path);
+	RECORD *target_dir;
+	int position;
+	getPointersFromPath(pathname, name, dir);
+	target_dir = get_dir(dir);
+	if(target_dir == NULL){
+		return -1; //problem finding the directory
+	}
+	if(searchEntryPerName(target_dir, name, TYPEVAL_DIRETORIO) != EOF_FAT){
+		return -1; //it there is already a file in this directory with same name
+	}
+	position = findFreeDirEntry(target_dir); //search for a free entry
+	if(position == -1){
+		return -1; //full directory
+	}
+	//PROCURAR UMA ENTRADA DA FAT
+	DWORD cluster = findFreeCluster();
+	if(cluster == EOF_FAT){ //FULL FAT
+			return -1;
+	}
+	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
+			return -1; //allocation problem
+	}
+	//CRIAR NOVO REGISTRO
+	RECORD entry;
+	entry.TypeVal = TYPEVAL_DIRETORIO;
+	strcpy(entry.name, name);
+	entry.bytesFileSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster; //sizeof(one cluster)
+	entry.firstCluster = cluster;
+	addEntry2Dir(target_dir, position, entry); //adds in the father directory
+	printf("\n\nFATHER AFTER AFTER ADDING\n\n");
+	printf_directory(target_dir, 6);
+	RECORD *new_dir = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
+	createNewDir(new_dir, entry,target_dir[0]);
+
+	//RECORD *new_dir = new_dir(target_dir, entry);
+	//create new dir function
+	//dentro: criar registros . e ..
+	//inicializa tudo
+	//escreve no cluster o novo diretorio
+	//escreve a fat
+	//escreve diretorio pai no disco
+
+	return 0;
 }
 
 //TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
@@ -140,9 +182,6 @@ int truncate2 (FILE2 handle){
 	return -1;
 }
 int seek2 (FILE2 handle, unsigned int offset){
-	return -1;
-}
-int mkdir2 (char *pathname){
 	return -1;
 }
 int rmdir2 (char *pathname){

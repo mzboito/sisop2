@@ -31,6 +31,17 @@ DWORD cluster2sector(DWORD data_cluster){
 	return firstSector;
 }
 
+int createNewDir(RECORD *new_dir, RECORD dir_entry, RECORD father_entry){
+	strcpy(dir_entry.name,".\0"); //instead of the dir name, we use the .
+	strcpy(father_entry.name,"..\0"); //father is ..
+	addEntry2Dir(new_dir, 0, dir_entry);
+	addEntry2Dir(new_dir, 1, father_entry);
+	printf("\n\nNEW DIR\n\n");
+	printf_directory(new_dir, 4);
+	//write on the disk
+	return 0;
+}
+
 void debugStructures(){
 	structures_init();
   printf("Return superBlock_init: %d\n", readSuperBlock());
