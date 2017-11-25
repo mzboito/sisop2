@@ -168,6 +168,35 @@ int mkdir2 (char *pathname){
 	return 0;
 }
 
+int rmdir2 (char *pathname){
+	if(structures_init()!= 0){
+		return -1;
+	}
+	int length_path = strlen(filename);
+	char * name = (char *)malloc(sizeof(char)*length_path);
+	char * dir = (char *)malloc(sizeof(char)*length_path);
+	RECORD *target_dir;
+	getPointersFromPath(filename, name, dir);
+	target_dir = get_dir(dir);
+	if(target_dir == NULL){
+		return -1; //problem finding the directory
+	}
+	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_DIRETORIO);
+	if(init_cluster != EOF_FAT){ //found the name
+		
+		//if it is not empty return -1;
+
+		free_cluster(init_cluster);
+		wipeFromDirectory(target_dir, name, TYPEVAL_DIRETORIO);
+		write_FAT();
+		write_DIR(target_dir);
+		return 0;
+	}else{
+		return -1; //the file does not exists
+	}
+}
+
+
 //TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
 FILE2 open2 (char *filename){
 	return -1;
@@ -185,9 +214,6 @@ int truncate2 (FILE2 handle){
 	return -1;
 }
 int seek2 (FILE2 handle, unsigned int offset){
-	return -1;
-}
-int rmdir2 (char *pathname){
 	return -1;
 }
 int chdir2 (char *pathname){
