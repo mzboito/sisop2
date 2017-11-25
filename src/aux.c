@@ -301,13 +301,13 @@ int printf_OPEN_FILES(int count){
 	}
 	int i = 0;
 	while(i < count){
-		printf("current pointer: %d\n", OPEN_FILES[i].currentPointer);
-		printf("handle: %d\n", OPEN_FILES[i].fileHandle);
-		if(OPEN_FILES[i].fileHandle > -1){
+		if(OPEN_FILES[i].fileHandle < 0){
+			printf(">> Position %d not allocated\n", i);
+		}else{
+			printf("current pointer: %d\n", OPEN_FILES[i].currentPointer);
+			printf("handle: %d\n", OPEN_FILES[i].fileHandle);
 			printf("name in the record: %s\n", OPEN_FILES[i].record->name);
 			printf("dir size: %08x\n", OPEN_FILES[i].dir_record->bytesFileSize);
-		}else{
-			printf("not allocated record\n");
 		}
 		i++;
 	}

@@ -270,11 +270,22 @@ FILE2 open2 (char *filename){
 	return handle;
 }
 
+int close2 (FILE2 handle){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if((handle < 0)||(handle > nOpenFiles-1)){
+		return -1; //invalid handle
+	}
+	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
+		return -1; //file is not there??
+	}
+	OPEN_FILES[handle].fileHandle = -1;
+	nOpenFiles--;
+	return 0;
+}
 
 //TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
-int close2 (FILE2 handle){
-	return -1;
-}
 int read2 (FILE2 handle, char *buffer, int size){
 	return -1;
 }
