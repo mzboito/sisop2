@@ -111,12 +111,12 @@ int delete2 (char *filename){
 	getPointersFromPath(filename, name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
-		printf("nao achou diretorio\n");
+		//printf("nao achou diretorio\n");
 		return -1; //problem finding the directory
 	}
 	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_REGULAR);
 	if(init_cluster != EOF_FAT){ //found the name
-		printf("found the name\n");
+		//printf("found the name\n");
 		free_cluster(init_cluster);
 		wipeFromDirectory(target_dir, name, TYPEVAL_REGULAR);
 		write_FAT();
@@ -235,10 +235,34 @@ int getcwd2 (char *pathname,int size){
 	return 0;
 }
 
-//TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
 FILE2 open2 (char *filename){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if(nOpenFiles == MAX_OPEN_FILES){
+		return -1; //we do not have space for another open file
+	}
+	/*Fun��o:	Abre um arquivo existente no disco.
+		O nome desse novo arquivo � aquele informado pelo par�metro "filename".
+		Ao abrir um arquivo, o contador de posi��o do arquivo (current pointer) deve ser colocado na posi��o zero.
+		A fun��o deve retornar o identificador (handle) do arquivo.
+		Esse handle ser� usado em chamadas posteriores do sistema de arquivo para fins de manipula��o do arquivo criado.
+		Todos os arquivos abertos por esta chamada s�o abertos em leitura e em escrita.
+		O ponto em que a leitura, ou escrita, ser� realizada � fornecido pelo valor current_pointer (ver fun��o seek2).
+
+	Entra:	filename -> nome do arquivo a ser apagado.
+
+	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o handle do arquivo (n�mero positivo)
+		Em caso de erro, deve ser retornado um valor negativo*/
+
+
+	//achar caminho, recuperar dir
+
 	return -1;
 }
+
+
+//TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
 int close2 (FILE2 handle){
 	return -1;
 }
