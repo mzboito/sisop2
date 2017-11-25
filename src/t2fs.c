@@ -165,7 +165,6 @@ int mkdir2 (char *pathname){
 	//escreve no cluster o novo diretorio
 	//escreve a fat
 	//escreve diretorio pai no disco
-
 	return 0;
 }
 

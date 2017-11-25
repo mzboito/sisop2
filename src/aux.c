@@ -147,7 +147,6 @@ RECORD* get_dir(char *dirPath){
 		int j = deleteFirstDirEntryStr(dirPath, first_dir_name);
 		dirPath = dirPath + j;
 		if(strcmp(first_dir_name, "/\0") == 0){ //if it is the root
-			//printf("I hope\n");
 			current_local = ROOT;
 		}else{
 			DWORD cluster = searchEntryPerName(current_local, first_dir_name, TYPEVAL_DIRETORIO);
@@ -157,9 +156,13 @@ RECORD* get_dir(char *dirPath){
 			if(first_time == 0){ //if it is not the first time
 					free(current_local);
 			}
-			RECORD *r = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
-			read_cluster(cluster, r); //read the new directory
-			current_local = r;
+			if(cluster == ROOT[0].firstCluster){
+				current_local = ROOT;
+			}else{
+				RECORD *r = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
+				read_cluster(cluster, r); //read the new directory
+				current_local = r;
+			}
 		}
 	}
 	return current_local;
