@@ -156,7 +156,7 @@ RECORD* get_dir(char *dirPath){
 			if(first_time == 0){ //if it is not the first time
 					free(current_local);
 			}
-			if(cluster == ROOT[0].firstCluster){
+			if(cluster == ROOT[0].firstCluster){ //keep pointer consistency
 				current_local = ROOT;
 			}else{
 				RECORD *r = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);

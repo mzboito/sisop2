@@ -28,7 +28,7 @@ int main() {
   int value = mkdir2(path);
   printf("return: %d\n", value);
   printf("\n\nTHE DIRECTORY AFTER\n\n");
-  r = get_dir("/");
+  //r = get_dir("/");
   printf_directory(r,6);
 
 
