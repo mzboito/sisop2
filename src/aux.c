@@ -140,7 +140,7 @@ RECORD* get_dir(char *dirPath){
 	if(structures_init() != 0){
 		return NULL;
 	}
-	//printf("\n\n%s\n", dirPath);
+	//printf("STARTING GET DIR \n\n%s\n", dirPath);
 	int first_time = 1;
 	int j;
 	char first_dir_name[MAX_FILE_NAME_SIZE];
@@ -187,7 +187,7 @@ RECORD* get_dir(char *dirPath){
 			}
 		}
 	}
-	printf("RETURN ok\n");
+	//printf("RETURN ok\n");
 	return current_local;
 }
 

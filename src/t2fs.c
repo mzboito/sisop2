@@ -35,7 +35,7 @@ FILE2 create2(char *filename){
 	RECORD *target_dir;
 	int position;
 	getPointersFromPath(filename, name, dir);
-	printf("create pointers %s %s %s\n", filename, name, dir);
+	//printf("create pointers %s %s %s\n", filename, name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
 		return -1; //problem finding the directory
@@ -112,7 +112,7 @@ int delete2 (char *filename){
 	//printf("%s %s %s\n", filename, name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
-		//printf("nao achou diretorio\n");
+		printf("nao achou diretorio\n");
 		return -1; //problem finding the directory
 	}
 	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_REGULAR);

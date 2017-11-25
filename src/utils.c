@@ -6,6 +6,7 @@
 #include "../include/utils.h"
 
 int deleteFirstDirEntryStr(char *dir_path, char *first_dir){ //retorna um valor para somar ao ponteiro do dir_path
+  //printf("Starting delete first\n");
   int len = strlen(dir_path);
   char dir_string[len+2];
   strcpy(dir_string, dir_path);
@@ -19,6 +20,7 @@ int deleteFirstDirEntryStr(char *dir_path, char *first_dir){ //retorna um valor 
     if(dir_string[i] == '/'){ //found the end of the dir string
       i++; //tamanho do que vai ser copiado
       strncpy(first_dir, dir_string, i);
+      //printf("first_dir %s , dir_string %s\n", first_dir, dir_string);
       if(i > 1){ //if it is not root dir
         first_dir[i-1] = '\0'; //remove last char (/)
       }else{ //if it is the root dir
