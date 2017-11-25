@@ -24,11 +24,12 @@ int main() {
   printf_directory(r,10);
   printf("Open files registers:\n");
   printf_OPEN_FILES(handle+1);*/
-  char *path = "./newdir\0";
+  char *path = "/newdir\0";
   int value = mkdir2(path);
   printf("return: %d\n", value);
   printf("\n\nTHE DIRECTORY AFTER\n\n");
-  printf_directory(ROOT,6);
+  r = get_dir("/");
+  printf_directory(r,6);
 
 
   return 0;

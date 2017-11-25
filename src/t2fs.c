@@ -83,8 +83,11 @@ FILE2 create2(char *filename){
 	//incrementa para o proximo handle
 	nOpenFiles++;
 	//ESCREVER NO DISCO
-	write_FAT();
-	write_DIR(target_dir);
+	if((write_FAT()!=0)||(write_DIR(target_dir) !=0)){
+		free_cluster(cluster);
+		target_dir[position].TypeVal = TYPEVAL_INVALIDO;
+		return -1;
+	}
 	return handle;
 }
 
@@ -149,15 +152,16 @@ int mkdir2 (char *pathname){
 	entry.bytesFileSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster; //sizeof(one cluster)
 	entry.firstCluster = cluster;
 	addEntry2Dir(target_dir, position, entry); //adds in the father directory
-	printf("\n\nFATHER AFTER AFTER ADDING\n\n");
-	printf_directory(target_dir, 6);
 	RECORD *new_dir = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
-	createNewDir(new_dir, entry,target_dir[0]);
-
-	//RECORD *new_dir = new_dir(target_dir, entry);
-	//create new dir function
-	//dentro: criar registros . e ..
-	//inicializa tudo
+	createNewDir(new_dir, entry, target_dir[0]);
+	if(write_DIR(new_dir) != 0){
+		return -1;
+	}
+	if((write_FAT()!=0)||(write_DIR(target_dir) !=0)){
+		free_cluster(cluster);
+		target_dir[position].TypeVal = TYPEVAL_INVALIDO;
+		return -1;
+	}
 	//escreve no cluster o novo diretorio
 	//escreve a fat
 	//escreve diretorio pai no disco

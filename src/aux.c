@@ -31,15 +31,15 @@ DWORD cluster2sector(DWORD data_cluster){
 	return firstSector;
 }
 
-int createNewDir(RECORD *new_dir, RECORD dir_entry, RECORD father_entry){
+void createNewDir(RECORD *new_dir, RECORD dir_entry, RECORD father_entry){
 	strcpy(dir_entry.name,".\0"); //instead of the dir name, we use the .
 	strcpy(father_entry.name,"..\0"); //father is ..
 	addEntry2Dir(new_dir, 0, dir_entry);
 	addEntry2Dir(new_dir, 1, father_entry);
-	printf("\n\nNEW DIR\n\n");
-	printf_directory(new_dir, 4);
+	//printf("\n\nNEW DIR\n\n");
+	//printf_directory(new_dir, 4);
 	//write on the disk
-	return 0;
+	//return 0;
 }
 
 void debugStructures(){
@@ -176,7 +176,9 @@ int initializeFAT(){
 	int entriesPerSector = SECTOR_SIZE/sizeof(DWORD);
 	DWORD *initialPoint = FAT;
 	while(initial < final){
-			read_sector(initial, (unsigned char *) FAT);
+			if(read_sector(initial, (unsigned char *) FAT) != 0){
+				return -1;
+			}
 			initial = initial + 1;
 			FAT = FAT + entriesPerSector;
 	}
@@ -355,7 +357,9 @@ int write_DIR(RECORD *dir){
 	if(cluster == FREE_FAT){
 		return -1;
 	}
-	write_cluster(cluster, (BYTE *)dir); //every dir uses only one cluster
+	if(write_cluster(cluster, (BYTE *)dir) != 0){ //every dir uses only one cluster
+		return -1;
+	}
 	return 0;
 }
 
@@ -368,7 +372,9 @@ int write_FAT(){
 	int entriesPerSector = SECTOR_SIZE/sizeof(DWORD);
 	DWORD *initialPoint = FAT;
 	while(initial < final){
-			write_sector(initial, (unsigned char *) FAT);
+			if(write_sector(initial, (unsigned char *) FAT) != 0){
+				return -1;
+			}
 			initial = initial + 1;
 			FAT = FAT + entriesPerSector;
 	}
