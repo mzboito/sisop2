@@ -106,7 +106,32 @@ int read_clusters(FILE2 handle, char *buffer, int size){
 	printf("pointer is at the cluster of index %d\n", first);
 
 	int clusters_number = size2clusterNumber(size); //how many clusters I am going to read
-printf("how many clusters I am going to read: %d\n", clusters_number);
+	printf("how many clusters I am going to read: %d\n", clusters_number);
+	if(clusters_number == 0){
+		return -1; //problem
+	}
+	int clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
+
+
+	DWORD position = getPointerPositionInCluster(OPEN_FILES[handle].currentPointer);
+	printf("where in the first cluster I start: %08x\n", position);
+
+	BYTE *chop = (BYTE *)malloc(clusterSize);
+	i = first;
+	while(clusters_number > 0){ //while I have something to read
+		printf("reading the cluster index %d which is %08x\n", i, clusters[i]);
+		if(read_cluster(clusters[i],chop) != 0){
+			return -1; //problem reading
+		}
+		if(position != 0){
+
+		}else{
+			
+		}
+		//do something with the chop
+		clusters_number--;
+		i++;
+	}
 
 	return -1;
 }
@@ -269,6 +294,20 @@ int getFileClusters(DWORD first_cluster, DWORD *list){
 	list[i] = current;
 	list[i+1] = EOF_FAT;
 	return 0;
+}
+
+DWORD getPointerPositionInCluster(DWORD pointer){
+	int cluster = SECTOR_SIZE*partitionInfo->SectorsPerCluster;
+	while(pointer >= 0){
+		if(pointer > cluster){
+			pointer = pointer - cluster;
+		}
+		else{ //already ok
+			return pointer;
+		}
+	}
+
+	return EOF_FAT;
 }
 
 int initializeFAT(){

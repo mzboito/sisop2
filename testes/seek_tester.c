@@ -26,6 +26,6 @@ int main(){
   seek2(handle, (SECTOR_SIZE*partitionInfo->SectorsPerCluster+1));
   read2(handle, buffer, 430);
   seek2(handle, 0);
-  read2(handle, buffer, 430);
+  read2(handle, buffer, 1025);
   return 0;
 }

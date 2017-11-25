@@ -34,6 +34,7 @@ int findPointerCluster(DWORD pointer);
 DWORD free_cluster(DWORD i);
 RECORD* get_dir(char *dirPath);
 int getFileClusters(DWORD first_cluster, DWORD *list);
+DWORD getPointerPositionInCluster(DWORD pointer);
 int initializeFAT();
 void initializeOPEN_FILES();
 int initializeROOT();
