@@ -87,6 +87,30 @@ void debugStructures(){
   }
 }
 
+int read_clusters(FILE2 handle, char *buffer, int size){
+	printf("\n\ncurrent pointer %08x\n", OPEN_FILES[handle].currentPointer);
+	printf("number of bytes in a cluster %08x\n", SECTOR_SIZE*partitionInfo->SectorsPerCluster);
+	printf("file size %08x\n", OPEN_FILES[handle].record->bytesFileSize);
+	printf("buffer size: %08x\n", size);
+
+	DWORD *clusters = (DWORD*)malloc(sizeof(DWORD)*FATtotalSize); //file clusters list
+	if(getFileClusters(OPEN_FILES[handle].record->firstCluster, clusters) != 0){
+		return -1;
+	}
+	int i = 0;
+	while(clusters[i] != EOF_FAT){
+		printf("file cluster %d is the cluster %08x\n", i, clusters[i]);
+		i++;
+	}
+	int first = findPointerCluster(OPEN_FILES[handle].currentPointer); //where do I start
+	printf("pointer is at the cluster of index %d\n", first);
+
+	int clusters_number = size2clusterNumber(size); //how many clusters I am going to read
+printf("how many clusters I am going to read: %d\n", clusters_number);
+
+	return -1;
+}
+
 int findEntryInDirectory(RECORD *dir, char *entry_name, BYTE type){
 	int i = 2;
 	while(i < DIRsize){
@@ -122,6 +146,21 @@ int findFreeDirEntry(RECORD *dir){ //get first free position on directory
 			return i;
 		}
 		i++;
+	}
+	return -1;
+}
+
+int findPointerCluster(DWORD pointer){ //returns the number (from 0 to N) of the cluster where the pointer is pointing to
+	int cluster = 0;
+	DWORD clusterSize = SECTOR_SIZE*partitionInfo->SectorsPerCluster;
+	while(pointer >= 0){
+		if(pointer < clusterSize){
+			return cluster;
+		}
+		else{
+			pointer = pointer - clusterSize;
+			cluster++;
+		}
 	}
 	return -1;
 }
@@ -196,7 +235,7 @@ RECORD* get_dir(char *dirPath){
 				first_time = 1; //cannot free root
 			}else{
 				RECORD *r = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
-				read_cluster(cluster, r); //read the new directory
+				read_cluster(cluster, (BYTE *)r); //read the new directory
 				//printf("cluster %08x\n", current_local[0].firstCluster);
 				current_local = r;
 				//printf_directory(current_local, 1);
@@ -207,6 +246,29 @@ RECORD* get_dir(char *dirPath){
 	}
 	//printf("RETURN ok\n");
 	return current_local;
+}
+
+int getFileClusters(DWORD first_cluster, DWORD *list){
+	if(FAT[first_cluster] == EOF_FAT){ //only one entry
+		list[0] = first_cluster;
+		list[1] = EOF_FAT; //this will be our "\0"
+	}
+	DWORD current = first_cluster;
+	int i = 0;
+	while(FAT[current] != EOF_FAT){
+		//printf("current: %08x FAT[current]: %08x\n", current, FAT[current]);
+		if(FAT[current] == ERROR_FAT){
+			return -1;
+		}else{
+				list[i] = current;
+				current = FAT[current];
+				//printf("current: %08x FAT[current]: %08x\n", current, FAT[current]);
+				i++;
+		}
+	}
+	list[i] = current;
+	list[i+1] = EOF_FAT;
+	return 0;
 }
 
 int initializeFAT(){
@@ -243,7 +305,7 @@ int initializeROOT(){
     return -1;
   }
 	ROOT = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
-	if(read_cluster(partitionInfo->RootDirCluster, (char *) ROOT) != 0){
+	if(read_cluster(partitionInfo->RootDirCluster, (BYTE *) ROOT) != 0){
 		return -1;
 	}
 	CURRENT_DIR = &ROOT[0];
@@ -356,6 +418,21 @@ DWORD set_cluster(DWORD i){ //TODO WRITE IN THE DISK
 	}
 	FAT[i] = EOF_FAT;
   return FREE_FAT;
+}
+
+int size2clusterNumber(int size){
+	int amount = 0;
+	int clusterSize = SECTOR_SIZE*partitionInfo->SectorsPerCluster;
+	while(size > 0){
+		if(size < clusterSize){ //only one
+			amount++;
+			return amount;
+		}else{
+			size = size - clusterSize;
+			amount++; //add one cluster
+		}
+	}
+	return -1;
 }
 
 int structures_init(){ //this function tests if the superblock and fat were already initialized

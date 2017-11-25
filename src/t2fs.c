@@ -299,15 +299,55 @@ int seek2 (FILE2 handle, unsigned int offset){
 		OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE);
 		//printf("%08x\n", OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE));
 	}else{
-		OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE)*offset;
+		if(offset <= OPEN_FILES[handle].record->bytesFileSize){
+			OPEN_FILES[handle].currentPointer = offset;
+		}else{
+			return -1;
+		}
 	}
 	return 0;
 }
 
-//TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
 int read2 (FILE2 handle, char *buffer, int size){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if((handle < 0)||(handle > nOpenFiles-1)){
+		return -1; //invalid handle
+	}
+	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
+		return -1; //file is not there??
+	}
+	if(size < 0){
+		return -1;
+	}
+
+	read_clusters(handle, buffer, size);
+	//int *number_of_clusters = (int *)malloc(sizeof(int)); //how many cluster am I gonna read
+	//DWORD *clusters = (DWORD *)malloc(sizeof(DWORD)*FATtotalSize); //list with these clusters
+
+	//find_clusters(handle, size, number_of_clusters, first_cluster); //it needs the first curster, currentPointer, size...
+	//DWORD cluster = OPEN_FILES[handle].record->firstCluster;
+
+	//get the cluster
+	//read_cluster(cluster, bufffer); //DWORD data_cluster, BYTE *buffer
+
+
+	/*Fun��o:	Realiza a leitura de "size" bytes do arquivo identificado por "handle".
+		Os bytes lidos s�o colocados na �rea apontada por "buffer".
+		Ap�s a leitura, o contador de posi��o (current pointer) deve ser ajustado para o byte seguinte ao �ltimo lido.
+
+	Entra:	handle -> identificador do arquivo a ser lido
+		buffer -> buffer onde colocar os bytes lidos do arquivo
+		size -> n�mero de bytes a serem lidos
+
+	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o n�mero de bytes lidos.
+		Se o valor retornado for menor do que "size", ent�o o contador de posi��o atingiu o final do arquivo.
+		Em caso de erro, ser� retornado um valor negativo.*/
 	return -1;
 }
+
+//TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
 int write2 (FILE2 handle, char *buffer, int size){
 	return -1;
 }
