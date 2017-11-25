@@ -23,6 +23,8 @@ all:
 	gcc -o openCloseFile_tester $(BIN_DIR)/* openCloseFile_tester.o
 	gcc -c getcwd2_tester.c -o getcwd2_tester.o
 	gcc -o getcwd2_tester $(BIN_DIR)/* getcwd2_tester.o
+	gcc -c seek_tester.c -o seek_tester.o
+	gcc -o seek_tester $(BIN_DIR)/* seek_tester.o
 
 clean:
 	rm *_tester

@@ -277,11 +277,30 @@ int close2 (FILE2 handle){
 	if((handle < 0)||(handle > nOpenFiles-1)){
 		return -1; //invalid handle
 	}
-	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
+	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is free
 		return -1; //file is not there??
 	}
 	OPEN_FILES[handle].fileHandle = -1;
 	nOpenFiles--;
+	return 0;
+}
+
+int seek2 (FILE2 handle, unsigned int offset){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if((handle < 0)||(handle > nOpenFiles-1)){
+		return -1; //invalid handle
+	}
+	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
+		return -1; //file is not there??
+	}
+	if(offset == -1){
+		OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE);
+		//printf("%08x\n", OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE));
+	}else{
+		OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE)*offset;
+	}
 	return 0;
 }
 
@@ -293,9 +312,6 @@ int write2 (FILE2 handle, char *buffer, int size){
 	return -1;
 }
 int truncate2 (FILE2 handle){
-	return -1;
-}
-int seek2 (FILE2 handle, unsigned int offset){
 	return -1;
 }
 int chdir2 (char *pathname){

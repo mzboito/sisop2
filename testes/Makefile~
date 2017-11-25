@@ -19,8 +19,8 @@ all:
 	gcc -o structures_tester $(BIN_DIR)/* structures_tester.o
 	gcc -c createsAndDeletes_tester.c -o createsAndDeletes_tester.o
 	gcc -o createsAndDeletes_tester $(BIN_DIR)/* createsAndDeletes_tester.o
-	gcc -c openFile_tester.c -o openFile_tester.o
-	gcc -o openFile_tester $(BIN_DIR)/* openFile_tester.o
+	gcc -c openCloseFile_tester.c -o openCloseFile_tester.o
+	gcc -o openCloseFile_tester $(BIN_DIR)/* openCloseFile_tester.o
 	gcc -c getcwd2_tester.c -o getcwd2_tester.o
 	gcc -o getcwd2_tester $(BIN_DIR)/* getcwd2_tester.o
 
