@@ -28,8 +28,13 @@ int main() {
   int value = mkdir2(path);
   printf("return: %d\n", value);
   printf("\n\nTHE DIRECTORY AFTER\n\n");
-  //r = get_dir("/");
   printf_directory(r,6);
+  printf("now let's remove it\n");
+  value = rmdir2(path);
+  printf("return: %d\n", value);
+  printf("\n\nTHE DIRECTORY AFTER\n\n");
+  printf_directory(r,6);
+
 
 
   return 0;

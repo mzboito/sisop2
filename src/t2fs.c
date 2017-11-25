@@ -40,24 +40,24 @@ FILE2 create2(char *filename){
 		return -1; //problem finding the directory
 	}
 	if(searchEntryPerName(target_dir, name, TYPEVAL_REGULAR) != EOF_FAT){
-		free(target_dir);
+
 		return -1; //it there is already a file in this directory with same name
 	}
 	position = findFreeDirEntry(target_dir); //search for a free entry
 	//printf("position: %d\n", position);
 	if(position == -1){
-		free(target_dir);
+
 		return -1; //full directory
 	}
 	//PROCURAR UMA ENTRADA DA FAT
 	DWORD cluster = findFreeCluster();
 	if(cluster == EOF_FAT){ //FULL FAT
-		free(target_dir);
+
 		return -1;
 	}
 	//printf("new cluster: %d\n", cluster);
 	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
-		free(target_dir);
+
 		return -1; //allocation problem
 	}
 	//CRIAR NOVO REGISTRO
@@ -72,13 +72,13 @@ FILE2 create2(char *filename){
 	int handle = nOpenFiles;
 	if(handle < 0){
 		free_cluster(cluster); //problem fat
-		free(target_dir);
+
 		return -1; //nOpenFiles init problem
 	}
 	//ADICIONAR O ARQUIVO NA LISTA DE ARQUIVOS ABERTOS
 	if(OPEN_FILES[handle].fileHandle != -1){ //if the position we have is not free
 		free_cluster(cluster); //fix fat
-		free(target_dir);
+
 		return -1; //major logical error
 	}
 	strcpy(OPEN_FILES[handle].name, name);
@@ -92,10 +92,10 @@ FILE2 create2(char *filename){
 	if((write_FAT()!=0)||(write_DIR(target_dir) !=0)){
 		free_cluster(cluster);
 		target_dir[position].TypeVal = TYPEVAL_INVALIDO;
-		free(target_dir);
+
 		return -1;
 	}
-	free(target_dir);
+
 	return handle;
 }
 
@@ -110,7 +110,7 @@ int delete2 (char *filename){
 	getPointersFromPath(filename, name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
-		free(target_dir);
+
 		return -1; //problem finding the directory
 	}
 	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_REGULAR);
@@ -119,10 +119,10 @@ int delete2 (char *filename){
 		wipeFromDirectory(target_dir, name, TYPEVAL_REGULAR);
 		write_FAT();
 		write_DIR(target_dir);
-		free(target_dir);
+
 		return 0;
 	}else{
-		free(target_dir);
+
 		return -1; //the file does not exists
 	}
 }
@@ -132,8 +132,8 @@ int mkdir2 (char *pathname){
 		return -1; //problem init structures
 	}
 	int length_path = strlen(pathname);
-	char * name = (char *)malloc(sizeof(char)*length_path);
-	char * dir = (char *)malloc(sizeof(char)*length_path);
+	char name[length_path];
+	char dir[length_path];
 	RECORD *target_dir;
 	int position;
 	getPointersFromPath(pathname, name, dir);
@@ -142,22 +142,18 @@ int mkdir2 (char *pathname){
 		return -1; //problem finding the directory
 	}
 	if(searchEntryPerName(target_dir, name, TYPEVAL_DIRETORIO) != EOF_FAT){
-		free(target_dir);
 		return -1; //it there is already a file in this directory with same name
 	}
 	position = findFreeDirEntry(target_dir); //search for a free entry
 	if(position == -1){
-		free(target_dir);
 		return -1; //full directory
 	}
 	//PROCURAR UMA ENTRADA DA FAT
 	DWORD cluster = findFreeCluster();
 	if(cluster == EOF_FAT){ //FULL FAT
-		free(target_dir);
 		return -1;
 	}
 	if(set_cluster(cluster) != 0){ //now the cluster is set as occupied
-		free(target_dir);
 		return -1; //allocation problem
 	}
 	//CRIAR NOVO REGISTRO
@@ -168,17 +164,18 @@ int mkdir2 (char *pathname){
 	entry.firstCluster = cluster;
 	addEntry2Dir(target_dir, position, entry); //adds in the father directory
 	RECORD *new_dir = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
+	//CAUTION MAYBE HERE CREATE NEW ENTRY FOR FATHER
 	createNewDir(new_dir, entry, target_dir[0]);
 	if(write_DIR(new_dir) != 0){
 		free_cluster(cluster);
 		target_dir[position].TypeVal = TYPEVAL_INVALIDO;
-		free(target_dir);
+
 		return -1;
 	}
 	if((write_FAT()!=0)||(write_DIR(target_dir) !=0)){
 		free_cluster(cluster);
 		target_dir[position].TypeVal = TYPEVAL_INVALIDO;
-		free(target_dir);
+
 		return -1;
 	}
 	//escreve no cluster o novo diretorio
@@ -204,16 +201,14 @@ int rmdir2 (char *pathname){
 	}
 	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_DIRETORIO);
 	if(init_cluster != EOF_FAT){ //found the name
+		printf("found the name\n");
 		//ok so now let's open the directory we want to delete for a second
 		RECORD *this_dir = get_dir(pathname);
 		if(this_dir == NULL){ //reeeeeeeeeeeelly wrong
-			free(this_dir);
-			free(target_dir);
 			return -1; //problem finding the directory
 		}
+		printf("before is not empty\n");
 		if(isNotEmpty(this_dir) != 0){
-			free(this_dir);
-			free(target_dir);
 			return -1;
 		}
 		free_cluster(init_cluster);

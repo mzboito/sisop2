@@ -38,6 +38,7 @@ void createNewDir(RECORD *new_dir, RECORD dir_entry, RECORD father_entry){
 	addEntry2Dir(new_dir, 1, father_entry);
 	//printf("\n\nNEW DIR\n\n");
 	//printf_directory(new_dir, 4);
+	//printf("father entry %s\n", father_entry.name);
 	//write on the disk
 	//return 0;
 }
@@ -140,25 +141,31 @@ RECORD* get_dir(char *dirPath){
 		return NULL;
 	}
 	int first_time = 1;
-	char *first_dir_name = (char *)malloc(sizeof(char)*MAX_FILE_NAME_SIZE);
+	int len = strlen(dirPath);
+	char first_dir_name[MAX_FILE_NAME_SIZE];
+	char remain[len];
 	RECORD *current_local = ROOT;
-
-	while(strlen(dirPath)>0){
-		int j = deleteFirstDirEntryStr(dirPath, first_dir_name);
-		dirPath = dirPath + j;
+	printf("dir path %s\n", remain);
+	while(strlen(remain)>0){
+		int j = deleteFirstDirEntryStr(remain, first_dir_name);
+		remain = remain + j;
+		printf("first %s, rest %s\n", first_dir_name, remain);
 		if(strcmp(first_dir_name, "/\0") == 0){ //if it is the root
+			printf("forever here\n");
 			current_local = ROOT;
 		}else{
 			DWORD cluster = searchEntryPerName(current_local, first_dir_name, TYPEVAL_DIRETORIO);
+			printf("cluster %d\n", cluster);
 			if(cluster == EOF_FAT){
 				return NULL; //it is not in current directory
 			}
 			if(first_time == 0){ //if it is not the first time
 					free(current_local);
 			}
-			if(cluster == ROOT[0].firstCluster){ //keep pointer consistency
+			/*if(cluster == ROOT[0].firstCluster){ //keep pointer consistency
 				current_local = ROOT;
-			}else{
+				first_time = 1; //cannot free root
+			}*/else{
 				RECORD *r = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
 				read_cluster(cluster, r); //read the new directory
 				current_local = r;
@@ -213,6 +220,13 @@ int initializeROOT(){
 }
 
 int isNotEmpty(RECORD *dir){
+	int i = 2; //does not count . and ..
+	while(i < DIRsize){
+		if(dir[i].TypeVal != TYPEVAL_INVALIDO){ //there is an entry
+			return 1;
+		}
+		i++;
+	}
 	return 0;
 }
 
