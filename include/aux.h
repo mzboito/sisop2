@@ -34,6 +34,7 @@ RECORD* get_dir(char *dirPath);
 int initializeFAT();
 void initializeOPEN_FILES();
 int initializeROOT();
+int isNotEmpty(RECORD *dir);
 int printf_directory(RECORD *dir, int count);
 int printf_FAT(int count);
 int printf_OPEN_FILES(int count);

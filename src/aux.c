@@ -212,6 +212,10 @@ int initializeROOT(){
 	return 0;
 }
 
+int isNotEmpty(RECORD *dir){
+	return 0;
+}
+
 int printf_directory(RECORD *dir, int count){
 	if(count > DIRsize){
 		return -1;
