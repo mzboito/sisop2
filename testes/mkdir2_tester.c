@@ -7,12 +7,25 @@
 
 int main() {
   structures_init();
-  //create2("/olhaeuaqui1.txt\0");
-  //printf("FAT BEFORE\n\n");
-  //printf_FAT(20);
   RECORD *r = get_dir("/");
-  printf("\n\nTHE DIRECTORY BEFORE\n\n");
-  printf_directory(r,6);
+  int value;
+  //THIS PART CREATES AND DELETES A FILE
+  //printf("FAT BEFORE\n\n");
+  //printf_directory(r,10);
+  /*value = create2("/olhaeuaqui1.txt\0");
+  printf("return: %d\n", value);
+  printf_FAT(20);
+  printf_directory(r,10);
+  printf("\n\n");
+  //printf_FAT(20);
+  value = delete2("olhaeuaqui1.txt\0");
+  printf("return: %d\n", value);
+  printf_FAT(20);
+  printf_directory(r,10);*/
+  //printf_FAT(20);
+
+  //printf("\n\nTHE DIRECTORY BEFORE\n\n");
+  //printf_directory(r,10);
   //r = get_dir("../dir1/");
   //printf_directory(r,10);
   /*
@@ -24,18 +37,28 @@ int main() {
   printf_directory(r,10);
   printf("Open files registers:\n");
   printf_OPEN_FILES(handle+1);*/
-  char *path = "/newdir\0";
+  /*char *path = "/newdir2\0";
   int value = mkdir2(path);
   printf("return: %d\n", value);
-  printf("\n\nTHE DIRECTORY AFTER\n\n");
-  printf_directory(r,6);
-  printf("now let's remove it\n");
-  value = rmdir2(path);
-  printf("return: %d\n", value);
-  printf("\n\nTHE DIRECTORY AFTER\n\n");
-  printf_directory(r,6);
+  value = 0;
+  if(value == -1){
+    printf("ERROR CREATING\n");
+  }else{
+    printf("\n\nTHE DIRECTORY AFTER\n\n");
+    printf_directory(r,6);
+    printf("now let's remove it\n");
+    value = rmdir2(path);
+    if(value == -1){
+      printf("ERROR REMOVING IT\n");
+      printf("return: %d\n", value);
+    }else{
+      printf("\n\nTHE DIRECTORY AFTER\n\n");
+      printf_directory(r,6);
 
+    }
+  }
 
+  */
 
   return 0;
 }

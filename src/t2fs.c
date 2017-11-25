@@ -30,11 +30,12 @@ FILE2 create2(char *filename){
 	}
 	//printf("number of open files: %d\n", nOpenFiles);
 	int length_path = strlen(filename);
-	char * name = (char *)malloc(sizeof(char)*length_path);
-	char * dir = (char *)malloc(sizeof(char)*length_path);
+	char name[length_path];
+	char dir[length_path];
 	RECORD *target_dir;
 	int position;
 	getPointersFromPath(filename, name, dir);
+	printf("create pointers %s %s %s\n", filename, name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
 		return -1; //problem finding the directory
@@ -104,22 +105,23 @@ int delete2 (char *filename){
 		return -1;
 	}
 	int length_path = strlen(filename);
-	char * name = (char *)malloc(sizeof(char)*length_path);
-	char * dir = (char *)malloc(sizeof(char)*length_path);
+	char name[length_path];
+	char dir[length_path];
 	RECORD *target_dir;
 	getPointersFromPath(filename, name, dir);
+	//printf("%s %s %s\n", filename, name, dir);
 	target_dir = get_dir(dir);
 	if(target_dir == NULL){
-
+		//printf("nao achou diretorio\n");
 		return -1; //problem finding the directory
 	}
 	int init_cluster = searchEntryPerName(target_dir, name, TYPEVAL_REGULAR);
 	if(init_cluster != EOF_FAT){ //found the name
+		printf("found the name\n");
 		free_cluster(init_cluster);
 		wipeFromDirectory(target_dir, name, TYPEVAL_REGULAR);
 		write_FAT();
 		write_DIR(target_dir);
-
 		return 0;
 	}else{
 
@@ -189,8 +191,6 @@ int rmdir2 (char *pathname){
 		return -1;
 	}
 	int length_path = strlen(pathname);
-	//char * name = (char *)malloc(sizeof(char)*length_path);
-	//char * dir = (char *)malloc(sizeof(char)*length_path);
 	char name[length_path];
 	char dir[length_path];
 	RECORD *target_dir;
@@ -205,6 +205,8 @@ int rmdir2 (char *pathname){
 		//ok so now let's open the directory we want to delete for a second
 		RECORD *this_dir = get_dir(pathname);
 		if(this_dir == NULL){ //reeeeeeeeeeeelly wrong
+			printf("cannot open it\n");
+			printf("the pathname %s\n", pathname);
 			return -1; //problem finding the directory
 		}
 		printf("before is not empty\n");

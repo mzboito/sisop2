@@ -140,38 +140,54 @@ RECORD* get_dir(char *dirPath){
 	if(structures_init() != 0){
 		return NULL;
 	}
+	//printf("\n\n%s\n", dirPath);
 	int first_time = 1;
-	int len = strlen(dirPath);
+	int j;
 	char first_dir_name[MAX_FILE_NAME_SIZE];
-	char remain[len];
+	char *remain = dirPath;
 	RECORD *current_local = ROOT;
-	printf("dir path %s\n", remain);
+	//printf("dir path %s\n", dirPath);
+	//printf_directory(current_local,8);
 	while(strlen(remain)>0){
-		int j = deleteFirstDirEntryStr(remain, first_dir_name);
+		//printf("remain >%s< and its size >%d<\n", remain, strlen(remain));
+		j = deleteFirstDirEntryStr(remain, first_dir_name);
+		if(j < 0){ //dit not found
+			printf("j = %d\n", j);
+			printf("problem\n");
+			printf("remain: %s\n", remain);
+			printf("first: %s\n", first_dir_name);
+			printf_directory(current_local, 10);
+			return NULL;
+		}
+		//printf("%s %s\n", remain, remain + j);
+		//printf("lens %d %d\n", strlen(remain), strlen(remain+j));
+		//printf("after delete\n");
+		//printf("first %s, rest %s\n", first_dir_name, remain);
+		//printf("after access\n");
 		remain = remain + j;
-		printf("first %s, rest %s\n", first_dir_name, remain);
 		if(strcmp(first_dir_name, "/\0") == 0){ //if it is the root
-			printf("forever here\n");
+			//printf("forever here\n");
 			current_local = ROOT;
 		}else{
 			DWORD cluster = searchEntryPerName(current_local, first_dir_name, TYPEVAL_DIRETORIO);
-			printf("cluster %d\n", cluster);
+			//printf("cluster %d\n", cluster);
 			if(cluster == EOF_FAT){
 				return NULL; //it is not in current directory
 			}
 			if(first_time == 0){ //if it is not the first time
 					free(current_local);
 			}
-			/*if(cluster == ROOT[0].firstCluster){ //keep pointer consistency
+			if(cluster == ROOT[0].firstCluster){ //keep pointer consistency
 				current_local = ROOT;
 				first_time = 1; //cannot free root
-			}*/else{
+			}else{
 				RECORD *r = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
 				read_cluster(cluster, r); //read the new directory
 				current_local = r;
 			}
 		}
 	}
+	printf("RETURN ok\n");
 	return current_local;
 }
 

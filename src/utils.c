@@ -7,11 +7,18 @@
 
 int deleteFirstDirEntryStr(char *dir_path, char *first_dir){ //retorna um valor para somar ao ponteiro do dir_path
   int len = strlen(dir_path);
+  char dir_string[len+2];
+  strcpy(dir_string, dir_path);
+  if(dir_path[len-1] != '/'){
+    dir_string[len] = '/';
+    dir_string[len+1] = '\0';
+    len = len + 1;
+  }
   int i = 0;
   while(i < len){
-    if(dir_path[i] == '/'){ //found the end of the dir string
+    if(dir_string[i] == '/'){ //found the end of the dir string
       i++; //tamanho do que vai ser copiado
-      strncpy(first_dir, dir_path, i);
+      strncpy(first_dir, dir_string, i);
       if(i > 1){ //if it is not root dir
         first_dir[i-1] = '\0'; //remove last char (/)
       }else{ //if it is the root dir
@@ -26,6 +33,7 @@ int deleteFirstDirEntryStr(char *dir_path, char *first_dir){ //retorna um valor 
 
 void dismemberString(char *fullpath, char *name, char *dirpath){
 	int inicioName = getFileNameStart(fullpath);
+  //printf("dismemberString: fullpath %s inicio name %d\n", fullpath, inicioName);
   int fimDir = inicioName; //aponta para a última letra do nome do dir
 	int len = strlen(fullpath); //tamanho do fullpath vai de 0 até len
   strncpy(name, &fullpath[inicioName], len);
@@ -49,29 +57,41 @@ void eraseLastDirString(char *string, char *new_string){
   strncpy(new_string, string, i+1);
 }
 
-int getFileNameStart(char *fullpath){ //get name start for ABSOLUTE PATH
-	int len = strlen(fullpath) -1; //tamanho do fullpath vai de 0 até len
-	int lenFixo = len;
-	int i = 0;
-	while (len != -1) {
-		i++;
-		if (fullpath[len] == '/') {
-			return (lenFixo - i + 2);
-		}
-		len--;
-	}
-	return (lenFixo - i + 2);
+int getFileNameStart(char *fullpath){ //get name start
+	int len = strlen(fullpath); //tamanho do fullpath vai de 0 até len
+	int i = len;
+  while(i >= 0){
+    if(fullpath[i] == '/'){ //if found a bar
+      //printf("found bar at i = %d\n", i);
+      return i+1; //returns the start of the name
+    }
+    i--;
+  }
+  return 0; //if does not find a bar, the whole path is the name
+  /*  int lenFixo = len;
+  	while (len != -1) {
+  		i++;
+  		if (fullpath[len] == '/') {
+  			return (lenFixo - i + 2);
+  		}
+  		len--;
+  	}
+  	return (lenFixo - i + 2);*/
 }
 
 void getPointersFromPath(char *filename, char *name, char *dir){
 	if(isRelativePath(filename) == 1){
-			int length_path = strlen(filename);
+      //printf("aqui, relativo\n");
+			int length_path = strlen(filename) + 5;
 			char relative[length_path];
 			dismemberString(filename,name,relative);
+      //printf("%s %s %s \n", filename, name, relative);
+      //printf("%s\n", dir);
 			dir[0] = '\0';
 			strcat(dir, current_path); //get path until that point
 			strcat(dir, relative);
 	}else{
+    //printf("abs\n");
 		dismemberString(filename,name,dir);
 	}
 }
