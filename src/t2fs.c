@@ -224,6 +224,16 @@ int rmdir2 (char *pathname){
 	}
 }
 
+int getcwd2 (char *pathname,int size){
+	if(structures_init() != 0){
+		return -1; //init problem
+	}
+	if(size < strlen(current_path)){
+		return -1; //not large enough to contain the current path
+	}
+	strcpy(pathname, current_path);
+	return 0;
+}
 
 //TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
 FILE2 open2 (char *filename){
@@ -245,9 +255,6 @@ int seek2 (FILE2 handle, unsigned int offset){
 	return -1;
 }
 int chdir2 (char *pathname){
-	return -1;
-}
-int getcwd2 (char *pathname,int size){
 	return -1;
 }
 DIR2 opendir2 (char *pathname){

@@ -19,6 +19,8 @@ all:
 	gcc -o delete2_tester $(BIN_DIR)/* delete2_tester.o
 	gcc -c mkdir2_tester.c -o mkdir2_tester.o
 	gcc -o mkdir2_tester $(BIN_DIR)/* mkdir2_tester.o
+	gcc -c getcwd2_tester.c -o getcwd2_tester.o
+	gcc -o getcwd2_tester $(BIN_DIR)/* getcwd2_tester.o
 
 clean:
 	rm *_tester
