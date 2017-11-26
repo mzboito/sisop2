@@ -406,6 +406,9 @@ int write2 (FILE2 handle, char *buffer, int size){
 int truncate2 (FILE2 handle){
 	return -1;
 }
+int chdir2 (char *pathname){
+	return -1;
+}
 int readdir2 (DIR2 handle,DIRENT2 *dentry){
 	return -1;
 }
