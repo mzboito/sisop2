@@ -324,18 +324,11 @@ int read2 (FILE2 handle, char *buffer, int size){
 	if(read_clusters(handle, buffer, size) == -1){
 		return -1; //problem reading
 	}
-	return strlen(buffer); //NUMBER OF BYTES
-	/*Fun��o:	Realiza a leitura de "size" bytes do arquivo identificado por "handle".
-		Os bytes lidos s�o colocados na �rea apontada por "buffer".
-		Ap�s a leitura, o contador de posi��o (current pointer) deve ser ajustado para o byte seguinte ao �ltimo lido.
-
-	Entra:	handle -> identificador do arquivo a ser lido
-		buffer -> buffer onde colocar os bytes lidos do arquivo
-		size -> n�mero de bytes a serem lidos
-
-	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o n�mero de bytes lidos.
-		Se o valor retornado for menor do que "size", ent�o o contador de posi��o atingiu o final do arquivo.
-		Em caso de erro, ser� retornado um valor negativo.*/
+	int amount = strlen(buffer);
+	//update_handle(handle, amount);
+	//update current pointer
+	OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].currentPointer + amount;
+	return amount; //NUMBER OF BYTES
 }
 
 //TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT

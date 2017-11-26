@@ -29,6 +29,7 @@ int main(){
   printf(".\n\nASKING TO READ %08x BYTES FROM POSITION %08x\n", 30, position);
   int size = read2(handle, buffer, 30);
   printf("NUMBER OF BYTES READ: %08x\n", size);
+  printf("NEW HANDLE POSITION: %08x\n", OPEN_FILES[handle].currentPointer);
   printf("content inside buffer:\n%s\n", buffer);
 
   position = (SECTOR_SIZE*partitionInfo->SectorsPerCluster+1);
@@ -36,6 +37,7 @@ int main(){
   seek2(handle, position);
   size = read2(handle, buffer, 430);
   printf("NUMBER OF BYTES READ: %08x\n", size);
+  printf("NEW HANDLE POSITION: %08x\n", OPEN_FILES[handle].currentPointer);
   printf("content inside buffer:\n%s\n", buffer);
 
   position = 0;
@@ -43,18 +45,21 @@ int main(){
   seek2(handle, 0);
   size = read2(handle, buffer, 1025);
   printf("NUMBER OF BYTES READ: %08x\n", size);
+  printf("NEW HANDLE POSITION: %08x\n", OPEN_FILES[handle].currentPointer);
   printf("content inside buffer:\n%s\n", buffer);
 
   printf(".\n\nASKING TO READ %08x BYTES FROM POSITION %08x\n", OPEN_FILES[handle].record->bytesFileSize, position);
   seek2(handle, 0);
   size = read2(handle, buffer, OPEN_FILES[handle].record->bytesFileSize);
   printf("NUMBER OF BYTES READ: %08x\n", size);
+  printf("NEW HANDLE POSITION: %08x\n", OPEN_FILES[handle].currentPointer);
   printf("content inside buffer:\n%s\n", buffer);
 
   printf(".\n\nASKING TO READ %08x BYTES FROM POSITION 0\n", OPEN_FILES[handle].record->bytesFileSize*10);
   seek2(handle, 0);
   size = read2(handle, buffer, OPEN_FILES[handle].record->bytesFileSize*10);
   printf("NUMBER OF BYTES READ: %08x\n", size);
+  printf("NEW HANDLE POSITION: %08x\n", OPEN_FILES[handle].currentPointer);
   printf("content inside buffer:\n%s\n", buffer);
   //printf_directory(ROOT, 10);
   /*seek2(handle, -1);
