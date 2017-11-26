@@ -384,7 +384,20 @@ DIR2 opendir2 (char *pathname){
 
 //readdir2 place
 
-//closedir2 place
+int closedir2 (DIR2 handle){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if((handle < 0)||(handle > nOpenDirs-1)){
+		return -1; //invalid handle
+	}
+	if(OPEN_DIRS[handle].dirHandle == -1){ //if the position we have is free
+		return -1; //file is not there??
+	}
+	OPEN_DIRS[handle].dirHandle = -1;
+	nOpenDirs--;
+	return 0;
+}
 
 //TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
 int write2 (FILE2 handle, char *buffer, int size){
@@ -393,10 +406,6 @@ int write2 (FILE2 handle, char *buffer, int size){
 int truncate2 (FILE2 handle){
 	return -1;
 }
-
 int readdir2 (DIR2 handle,DIRENT2 *dentry){
-	return -1;
-}
-int closedir2 (DIR2 handle){
 	return -1;
 }

@@ -27,8 +27,8 @@ all:
 	gcc -o seek_tester $(BIN_DIR)/* seek_tester.o
 	gcc -c readFile_tester.c -o readFile_tester.o
 	gcc -o readFile_tester $(BIN_DIR)/* readFile_tester.o
-	gcc -c opendir2_tester.c -o opendir2_tester.o
-	gcc -o opendir2_tester $(BIN_DIR)/* opendir2_tester.o
+	gcc -c openClosedir_tester.c -o openClosedir_tester.o
+	gcc -o openClosedir_tester $(BIN_DIR)/* openClosedir_tester.o
 
 clean:
 	rm *_tester
