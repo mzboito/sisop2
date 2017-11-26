@@ -201,7 +201,32 @@ int read2 (FILE2 handle, char *buffer, int size){
 	return amount; //NUMBER OF BYTES
 }
 
-//write2 place
+int write2 (FILE2 handle, char *buffer, int size){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if((handle < 0)||(handle > nOpenFiles-1)){
+		return -1; //invalid handle
+	}
+	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
+		return -1; //file is not there??
+	}
+	if(size < 0){
+		return -1;
+	}
+
+
+	/*
+	if(read_clusters(handle, buffer, size) == -1){
+		return -1; //problem reading
+	}
+	int amount = strlen(buffer);
+	//update_handle(handle, amount);
+	//update current pointer
+	OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].currentPointer + amount;
+	return amount;*/
+	return -1;
+}
 
 //truncate2 place
 
@@ -439,9 +464,6 @@ int closedir2 (DIR2 handle){
 }
 
 //TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
-int write2 (FILE2 handle, char *buffer, int size){
-	return -1;
-}
 int truncate2 (FILE2 handle){
 	return -1;
 }
