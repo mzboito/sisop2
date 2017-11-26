@@ -183,11 +183,11 @@ RECORD* get_dir(char *dirPath){
 		//printf("remain >%s< and its size >%d<\n", remain, strlen(remain));
 		j = deleteFirstDirEntryStr(remain, first_dir_name);
 		if(j < 0){ //dit not found
-			printf("j = %d\n", j);
-			printf("problem\n");
-			printf("remain: %s\n", remain);
-			printf("first: %s\n", first_dir_name);
-			printf_directory(current_local, 10);
+			//printf("j = %d\n", j);
+			//printf("problem\n");
+			//printf("remain: %s\n", remain);
+			//printf("first: %s\n", first_dir_name);
+			//printf_directory(current_local, 10);
 			return NULL;
 		}
 		remain = remain + j;
@@ -197,7 +197,6 @@ RECORD* get_dir(char *dirPath){
 		//printf("first %s, rest %s\n", first_dir_name, remain);
 		//printf("after access\n");
 		if(strcmp(first_dir_name, "/\0") == 0){ //if it is the root
-			//printf("forever here\n");
 			current_local = ROOT;
 		}else{
 			DWORD cluster = searchEntryPerName(current_local, first_dir_name, TYPEVAL_DIRETORIO);
@@ -208,8 +207,18 @@ RECORD* get_dir(char *dirPath){
 			if(first_time == 0){ //if it is not the first time
 					free(current_local);
 			}
-			if(cluster == ROOT[0].firstCluster){ //keep pointer consistency
-				current_local = ROOT;
+			if((cluster == ROOT[0].firstCluster)||(isAnOpenDir(cluster) == 1)){ //keep pointer consistency
+				//printf("entrou no caso dos abertos\n");
+				if(cluster == ROOT[0].firstCluster){
+					current_local = ROOT;
+				}else{
+					//printf("tentou pegar aberto\n");
+					current_local = get_opened_dir(cluster);
+					if(current_local == NULL){
+						//printf("falhou\n");
+						return NULL; //major problem
+					}
+				}
 				first_time = 1; //cannot free root
 			}else{
 				RECORD *r = (RECORD *)malloc(SECTOR_SIZE * partitionInfo->SectorsPerCluster);
@@ -224,6 +233,18 @@ RECORD* get_dir(char *dirPath){
 	}
 	//printf("RETURN ok\n");
 	return current_local;
+}
+
+RECORD* get_opened_dir(DWORD cluster){
+	int i =0;
+	while(i < nOpenDirs){
+		if(OPEN_DIRS[i].record[0].firstCluster == cluster){
+			if(OPEN_DIRS[i].dirHandle != -1){
+				return OPEN_DIRS[i].record;
+			}
+		}
+	}
+	return NULL;
 }
 
 int getFileClusters(DWORD first_cluster, DWORD *list){
@@ -308,6 +329,18 @@ int initializeROOT(){
 	return 0;
 }
 
+int isAnOpenDir(DWORD cluster){
+	int i =0;
+	while(i < nOpenDirs){
+		if(OPEN_DIRS[i].record[0].firstCluster == cluster){
+			if(OPEN_DIRS[i].dirHandle != -1){
+				return 1;
+			}
+		}
+	}
+	return -1;
+}
+
 int isNotEmpty(RECORD *dir){
 	int i = 2; //does not count . and ..
 	while(i < DIRsize){
@@ -359,6 +392,7 @@ int printf_OPEN_DIRS(int count){
 		if(OPEN_DIRS[i].dirHandle < 0){
 			printf(">> Position %d not allocated\n", i);
 		}else{
+			printf("name: %s\n", OPEN_DIRS[i].name);
 			printf("current pointer: %d\n", OPEN_DIRS[i].currentPointer);
 			printf("handle: %d\n", OPEN_DIRS[i].dirHandle);
 			printf("directory cluster: %08x\n", OPEN_DIRS[i].record->firstCluster);

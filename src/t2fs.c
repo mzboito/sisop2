@@ -351,7 +351,7 @@ DIR2 opendir2 (char *pathname){
 
 	RECORD *target_dir = get_dir(pathname);
 	if(target_dir == NULL){
-		printf("problem here\n");
+		printf("NULL DIR RETURN\n");
 		return -1;
 	}
 	int handle = nOpenDirs;

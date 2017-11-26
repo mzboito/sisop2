@@ -29,7 +29,8 @@ int main() {
   //printf_directory(r,10);
   //r = get_dir("../dir1/");
   //printf_directory(r,10);
-  /*
+
+  opendir2("dir1");
   char *path = "./dir1/file71.txt\0";
   int handle = create2(path);
   r = get_dir("./dir1/");
@@ -52,7 +53,7 @@ int main() {
     printf("refresh\n");
     printf_directory(r,10);
 
-  }*/
+  }
   //MKDIR TESTS
   //ABSOLUTE
   /*char *path = "/newdir2\0";

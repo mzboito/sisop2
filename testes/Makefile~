@@ -25,6 +25,8 @@ all:
 	gcc -o getcwd2_tester $(BIN_DIR)/* getcwd2_tester.o
 	gcc -c seek_tester.c -o seek_tester.o
 	gcc -o seek_tester $(BIN_DIR)/* seek_tester.o
+	gcc -c readFile_tester.c -o readFile_tester.o
+	gcc -o readFile_tester $(BIN_DIR)/* readFile_tester.o
 
 clean:
 	rm *_tester
