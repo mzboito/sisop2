@@ -12,6 +12,9 @@ int main(){
   printf("buffer now has: %s\n", buffer);
   current_path = "/now/i/am/a/really/long/path/\0";
   printf("return %d\n", getcwd2(buffer,size));
+  printf("open dir\n");
+  opendir2("dir1\0");
+  printf_OPEN_DIRS(10);
 
   return 0;
 }

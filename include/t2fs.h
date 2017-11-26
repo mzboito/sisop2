@@ -40,6 +40,13 @@ typedef struct file_fd {
 	struct t2fs_record *dir_record;
 } File_descriptor;
 
+typedef struct dir_fd {
+	char name[MAX_FILE_NAME_SIZE];
+	DWORD currentPointer;
+	DIR2 dirHandle;
+	struct t2fs_record *record;
+} Directory_descriptor;
+
 /*END OUR STRUCTURE*/
 
 /** Registro de diret�rio (entrada de diret�rio) */

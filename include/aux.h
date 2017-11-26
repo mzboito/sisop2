@@ -16,9 +16,11 @@ extern DWORD *FAT; //ponteiro para a FAT
 extern RECORD *ROOT; //struct t2fs_record *ROOT;
 extern RECORD *CURRENT_DIR; //struct t2fs_record CURRENT_DIR;
 extern File_descriptor OPEN_FILES[MAX_OPEN_FILES];
+extern Directory_descriptor OPEN_DIRS[MAX_OPEN_FILES];
 
 extern int partitionInfoInitialized;
 extern int nOpenFiles;
+extern int nOpenDirs;
 extern DWORD FATtotalSize;
 extern DWORD DIRsize; //in number of entries
 extern char * current_path;
@@ -36,11 +38,12 @@ RECORD* get_dir(char *dirPath);
 int getFileClusters(DWORD first_cluster, DWORD *list);
 DWORD getPointerPositionInCluster(DWORD pointer);
 int initializeFAT();
-void initializeOPEN_FILES();
+void initializeOPEN_LISTS();
 int initializeROOT();
 int isNotEmpty(RECORD *dir);
 int printf_directory(RECORD *dir, int count);
 int printf_FAT(int count);
+int printf_OPEN_DIRS(int count);
 int printf_OPEN_FILES(int count);
 int read_cluster(DWORD data_cluster, BYTE *buffer);
 int read_clusters(FILE2 handle, char *buffer, int size);

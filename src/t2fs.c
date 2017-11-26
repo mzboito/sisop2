@@ -125,6 +125,109 @@ int delete2 (char *filename){
 	}
 }
 
+FILE2 open2 (char *filename){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if(nOpenFiles == MAX_OPEN_FILES){
+		return -1; //we do not have space for another open file
+	}
+	int length_path = strlen(filename);
+	char name[length_path];
+	char dir[length_path];
+	RECORD *target_dir;
+	int position;
+	getPointersFromPath(filename, name, dir);
+	//printf("create pointers %s %s %s\n", filename, name, dir);
+	target_dir = get_dir(dir);
+	if(target_dir == NULL){
+		//printf("MAS MEU DEUS FILHO\n");
+		return -1; //problem finding the directory
+	}
+	position = findEntryInDirectory(target_dir, name, TYPEVAL_REGULAR);
+	if(position == -1){ //did not found the entry in the directory =(
+			//printf("oieeee\n");
+			return -1; //problem
+	}
+	int handle = nOpenFiles;
+	if(OPEN_FILES[handle].fileHandle != -1){ //if the position we have is not free
+		return -1; //major logical error
+	}
+	//init for the new open file
+	strcpy(OPEN_FILES[handle].name, name);
+	OPEN_FILES[handle].currentPointer = 0;
+	OPEN_FILES[handle].fileHandle = handle;
+	OPEN_FILES[handle].record = &target_dir[position];
+	OPEN_FILES[handle].dir_record = &target_dir[0];
+	nOpenFiles++;
+	return handle;
+}
+
+int close2 (FILE2 handle){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if((handle < 0)||(handle > nOpenFiles-1)){
+		return -1; //invalid handle
+	}
+	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is free
+		return -1; //file is not there??
+	}
+	OPEN_FILES[handle].fileHandle = -1;
+	nOpenFiles--;
+	return 0;
+}
+
+int read2 (FILE2 handle, char *buffer, int size){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if((handle < 0)||(handle > nOpenFiles-1)){
+		return -1; //invalid handle
+	}
+	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
+		return -1; //file is not there??
+	}
+	if(size < 0){
+		return -1;
+	}
+	if(read_clusters(handle, buffer, size) == -1){
+		return -1; //problem reading
+	}
+	int amount = strlen(buffer);
+	//update_handle(handle, amount);
+	//update current pointer
+	OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].currentPointer + amount;
+	return amount; //NUMBER OF BYTES
+}
+
+//write2 place
+
+//truncate2 place
+
+int seek2 (FILE2 handle, unsigned int offset){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -1; //if problem to initialize, then ERROR
+	}
+	if((handle < 0)||(handle > nOpenFiles-1)){
+		return -1; //invalid handle
+	}
+	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
+		return -1; //file is not there??
+	}
+	if(offset == -1){
+		OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE);
+		//printf("%08x\n", OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE));
+	}else{
+		if(offset <= OPEN_FILES[handle].record->bytesFileSize){
+			OPEN_FILES[handle].currentPointer = offset;
+		}else{
+			return -1;
+		}
+	}
+	return 0;
+}
+
 int mkdir2 (char *pathname){
 	if(structures_init()!= 0){
 		return -1; //problem init structures
@@ -221,6 +324,8 @@ int rmdir2 (char *pathname){
 	}
 }
 
+//chdir place
+
 int getcwd2 (char *pathname,int size){
 	if(structures_init() != 0){
 		return -1; //init problem
@@ -232,104 +337,54 @@ int getcwd2 (char *pathname,int size){
 	return 0;
 }
 
-FILE2 open2 (char *filename){
-	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
-		return -1; //if problem to initialize, then ERROR
-	}
-	if(nOpenFiles == MAX_OPEN_FILES){
-		return -1; //we do not have space for another open file
-	}
-	int length_path = strlen(filename);
-	char name[length_path];
-	char dir[length_path];
-	RECORD *target_dir;
-	int position;
-	getPointersFromPath(filename, name, dir);
-	//printf("create pointers %s %s %s\n", filename, name, dir);
-	target_dir = get_dir(dir);
-	if(target_dir == NULL){
-		//printf("MAS MEU DEUS FILHO\n");
-		return -1; //problem finding the directory
-	}
-	position = findEntryInDirectory(target_dir, name, TYPEVAL_REGULAR);
-	if(position == -1){ //did not found the entry in the directory =(
-			//printf("oieeee\n");
-			return -1; //problem
-	}
-	int handle = nOpenFiles;
-	if(OPEN_FILES[handle].fileHandle != -1){ //if the position we have is not free
-		return -1; //major logical error
-	}
-	//init for the new open file
-	strcpy(OPEN_FILES[handle].name, name);
-	OPEN_FILES[handle].currentPointer = 0;
-	OPEN_FILES[handle].fileHandle = handle;
-	OPEN_FILES[handle].record = &target_dir[position];
-	OPEN_FILES[handle].dir_record = &target_dir[0];
-	nOpenFiles++;
-	return handle;
-}
-
-int close2 (FILE2 handle){
-	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
-		return -1; //if problem to initialize, then ERROR
-	}
-	if((handle < 0)||(handle > nOpenFiles-1)){
-		return -1; //invalid handle
-	}
-	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is free
-		return -1; //file is not there??
-	}
-	OPEN_FILES[handle].fileHandle = -1;
-	nOpenFiles--;
-	return 0;
-}
-
-int seek2 (FILE2 handle, unsigned int offset){
-	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
-		return -1; //if problem to initialize, then ERROR
-	}
-	if((handle < 0)||(handle > nOpenFiles-1)){
-		return -1; //invalid handle
-	}
-	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
-		return -1; //file is not there??
-	}
-	if(offset == -1){
-		OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE);
-		//printf("%08x\n", OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE));
-	}else{
-		if(offset <= OPEN_FILES[handle].record->bytesFileSize){
-			OPEN_FILES[handle].currentPointer = offset;
-		}else{
-			return -1;
-		}
-	}
-	return 0;
-}
-
-int read2 (FILE2 handle, char *buffer, int size){
-	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
-		return -1; //if problem to initialize, then ERROR
-	}
-	if((handle < 0)||(handle > nOpenFiles-1)){
-		return -1; //invalid handle
-	}
-	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
-		return -1; //file is not there??
-	}
-	if(size < 0){
+DIR2 opendir2 (char *pathname){
+	if(structures_init() != 0){
 		return -1;
 	}
-	if(read_clusters(handle, buffer, size) == -1){
-		return -1; //problem reading
+	if(nOpenDirs == MAX_OPEN_FILES){
+		return -1; //we do not have space for another open file
 	}
-	int amount = strlen(buffer);
-	//update_handle(handle, amount);
-	//update current pointer
-	OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].currentPointer + amount;
-	return amount; //NUMBER OF BYTES
+	int length_path = strlen(pathname);
+	char name[length_path];
+	char dir[length_path];
+	getPointersFromPath(pathname, name, dir);
+
+	RECORD *target_dir = get_dir(pathname);
+	if(target_dir == NULL){
+		printf("problem here\n");
+		return -1;
+	}
+	int handle = nOpenDirs;
+	if(OPEN_DIRS[handle].dirHandle != -1){ //if the position we have is not free
+		return -1; //major logical error
+	}
+	strcpy(OPEN_DIRS[handle].name, name);
+	OPEN_DIRS[handle].currentPointer = 0;
+	OPEN_DIRS[handle].dirHandle = handle;
+	OPEN_DIRS[handle].record = target_dir;
+	nOpenDirs++;
+	return handle;
+
+
+	//init for the new open file
+
+	/*Fun��o:	Abre um diret�rio existente no disco.
+		O caminho desse diret�rio � aquele informado pelo par�metro "pathname".
+		Se a opera��o foi realizada com sucesso, a fun��o:
+			(a) deve retornar o identificador (handle) do diret�rio
+			(b) deve posicionar o ponteiro de entradas (current entry) na primeira posi��o v�lida do diret�rio "pathname".
+		O handle retornado ser� usado em chamadas posteriores do sistema de arquivo para fins de manipula��o do diret�rio.
+
+	Entra:	pathname -> caminho do diret�rio a ser aberto
+
+	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o identificador do diret�rio (handle).
+		Em caso de erro, ser� retornado um valor negativo.*/
+	return -1;
 }
+
+//readdir2 place
+
+//closedir2 place
 
 //TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
 int write2 (FILE2 handle, char *buffer, int size){
@@ -338,12 +393,7 @@ int write2 (FILE2 handle, char *buffer, int size){
 int truncate2 (FILE2 handle){
 	return -1;
 }
-int chdir2 (char *pathname){
-	return -1;
-}
-DIR2 opendir2 (char *pathname){
-	return -1;
-}
+
 int readdir2 (DIR2 handle,DIRENT2 *dentry){
 	return -1;
 }

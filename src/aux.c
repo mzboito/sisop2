@@ -10,9 +10,11 @@ DWORD *FAT; //lista da FAT
 RECORD *ROOT;
 RECORD *CURRENT_DIR;
 File_descriptor OPEN_FILES[MAX_OPEN_FILES];
+Directory_descriptor OPEN_DIRS[MAX_OPEN_FILES];
 
 int partitionInfoInitialized = -1;
 int nOpenFiles;
+int nOpenDirs;
 DWORD FATtotalSize;
 DWORD DIRsize; //in number of entries
 char * current_path;
@@ -282,10 +284,11 @@ int initializeFAT(){
   return 0;
 }
 
-void initializeOPEN_FILES(){
+void initializeOPEN_LISTS(){
 	int i = 0;
 	while(i < MAX_OPEN_FILES){
 		OPEN_FILES[i].fileHandle = -1;
+		OPEN_DIRS[i].dirHandle = -1;
 		i++;
 	}
 }
@@ -343,6 +346,25 @@ int printf_FAT(int count){
 	printf("FREE_FAT %08x\n", FREE_FAT);
 	printf("ERROR_FAT %08x\n", ERROR_FAT);
 	printf("EOF_FAT %08x\n", EOF_FAT);
+	return 0;
+}
+
+int printf_OPEN_DIRS(int count){
+	if(count > MAX_OPEN_FILES){
+		//printf("%d, %d\n", count, nOpenFiles);
+		return -1;
+	}
+	int i = 0;
+	while(i < count){
+		if(OPEN_DIRS[i].dirHandle < 0){
+			printf(">> Position %d not allocated\n", i);
+		}else{
+			printf("current pointer: %d\n", OPEN_DIRS[i].currentPointer);
+			printf("handle: %d\n", OPEN_DIRS[i].dirHandle);
+			printf("directory cluster: %08x\n", OPEN_DIRS[i].record->firstCluster);
+		}
+		i++;
+	}
 	return 0;
 }
 
@@ -514,7 +536,8 @@ int structures_init(){ //this function tests if the superblock and fat were alre
 			return -1;
 		}
 		nOpenFiles = 0; //no open files at mounting time
-		initializeOPEN_FILES();
+		nOpenDirs = 0;
+		initializeOPEN_LISTS();
 		return 0;
 	}
 	return 0;
