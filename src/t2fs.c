@@ -324,16 +324,32 @@ int rmdir2 (char *pathname){
 	}
 }
 
-//chdir place
+int chdir2 (char *pathname){
+	if(structures_init()!= 0){
+		return -1;
+	}
+	RECORD *target_dir = get_dir(pathname);
+	if(target_dir == NULL){ //not a directory
+		//printf("NULL DIR\n");
+		return -1;
+	}
+	//printf("current path before: %s\n", current_path);
+	strcpy(current_path, pathname);
+	//printf("current path after: %s\n", current_path);
+	return 0;
+}
 
 int getcwd2 (char *pathname,int size){
 	if(structures_init() != 0){
 		return -1; //init problem
 	}
+	//printf("%d %s %d", size, current_path, strlen(current_path));
+	//printf("strlen current %d\n", strlen(current_path));
 	if(size < strlen(current_path)){
 		return -1; //not large enough to contain the current path
 	}
-	strcpy(pathname, current_path);
+	//printf("current %s size %d\n", current_path, size);
+	strncpy(pathname, current_path, size);
 	return 0;
 }
 
@@ -351,7 +367,7 @@ DIR2 opendir2 (char *pathname){
 
 	RECORD *target_dir = get_dir(pathname);
 	if(target_dir == NULL){
-		printf("NULL DIR RETURN\n");
+		//printf("NULL DIR RETURN\n");
 		return -1;
 	}
 	int handle = nOpenDirs;
@@ -427,8 +443,5 @@ int write2 (FILE2 handle, char *buffer, int size){
 	return -1;
 }
 int truncate2 (FILE2 handle){
-	return -1;
-}
-int chdir2 (char *pathname){
 	return -1;
 }

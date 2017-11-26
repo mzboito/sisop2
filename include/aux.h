@@ -23,7 +23,7 @@ extern int nOpenFiles;
 extern int nOpenDirs;
 extern DWORD FATtotalSize;
 extern DWORD DIRsize; //in number of entries
-extern char * current_path;
+extern char *current_path;
 
 void addEntry2Dir(RECORD *dir, int position, RECORD entry);
 DWORD cluster2sector();

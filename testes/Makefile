@@ -21,14 +21,14 @@ all:
 	gcc -o createsAndDeletes_tester $(BIN_DIR)/* createsAndDeletes_tester.o
 	gcc -c openCloseFile_tester.c -o openCloseFile_tester.o
 	gcc -o openCloseFile_tester $(BIN_DIR)/* openCloseFile_tester.o
-	gcc -c getcwd2_tester.c -o getcwd2_tester.o
-	gcc -o getcwd2_tester $(BIN_DIR)/* getcwd2_tester.o
 	gcc -c seek_tester.c -o seek_tester.o
 	gcc -o seek_tester $(BIN_DIR)/* seek_tester.o
 	gcc -c readFile_tester.c -o readFile_tester.o
 	gcc -o readFile_tester $(BIN_DIR)/* readFile_tester.o
 	gcc -c openClosedir_tester.c -o openClosedir_tester.o
 	gcc -o openClosedir_tester $(BIN_DIR)/* openClosedir_tester.o
+	gcc -c getSetDirPath_tester.c -o getSetDirPath_tester.o
+	gcc -o getSetDirPath_tester $(BIN_DIR)/* getSetDirPath_tester.o
 
 clean:
 	rm *_tester

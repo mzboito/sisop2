@@ -17,7 +17,7 @@ int nOpenFiles;
 int nOpenDirs;
 DWORD FATtotalSize;
 DWORD DIRsize; //in number of entries
-char * current_path;
+char *current_path;
 
 void addEntry2Dir(RECORD *dir, int position, RECORD entry){
 	dir[position].TypeVal = entry.TypeVal;
