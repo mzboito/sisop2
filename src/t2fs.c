@@ -382,7 +382,30 @@ DIR2 opendir2 (char *pathname){
 	return -1;
 }
 
-//readdir2 place
+int readdir2 (DIR2 handle,DIRENT2 *dentry){
+	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
+		return -2; //if problem to initialize, then ERROR
+	}
+	if((handle < 0)||(handle > nOpenDirs-1)){
+		return -2; //invalid handle
+	}
+	if(OPEN_DIRS[handle].dirHandle == -1){ //if the position we have is not free
+		return -2; //file is not there??
+	}
+	if(OPEN_DIRS[handle].currentPointer == DIRsize){ //end of the directory
+		return -END_OF_DIR;
+	}
+	RECORD *dir = OPEN_DIRS[handle].record;
+	DWORD pointer = OPEN_DIRS[handle].currentPointer;
+	if(dir[pointer].TypeVal == TYPEVAL_INVALIDO){
+		return -END_OF_DIR; //end of valid entries
+	}
+	strcpy(dentry->name, dir[pointer].name);
+	dentry->fileType = dir[pointer].TypeVal;
+	dentry->fileSize = dir[pointer].bytesFileSize;
+	OPEN_DIRS[handle].currentPointer++;
+	return 0;
+}
 
 int closedir2 (DIR2 handle){
 	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
@@ -407,8 +430,5 @@ int truncate2 (FILE2 handle){
 	return -1;
 }
 int chdir2 (char *pathname){
-	return -1;
-}
-int readdir2 (DIR2 handle,DIRENT2 *dentry){
 	return -1;
 }
