@@ -43,6 +43,7 @@ int printf_directory(RECORD *dir, int count);
 int printf_FAT(int count);
 int printf_OPEN_FILES(int count);
 int read_cluster(DWORD data_cluster, BYTE *buffer);
+int read_clusters(FILE2 handle, char *buffer, int size);
 int readSuperBlock();
 DWORD searchEntryPerName(RECORD* dir, char *name, BYTE type);
 DWORD set_cluster(DWORD i);

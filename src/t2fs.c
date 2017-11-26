@@ -321,18 +321,10 @@ int read2 (FILE2 handle, char *buffer, int size){
 	if(size < 0){
 		return -1;
 	}
-
-	read_clusters(handle, buffer, size);
-	//int *number_of_clusters = (int *)malloc(sizeof(int)); //how many cluster am I gonna read
-	//DWORD *clusters = (DWORD *)malloc(sizeof(DWORD)*FATtotalSize); //list with these clusters
-
-	//find_clusters(handle, size, number_of_clusters, first_cluster); //it needs the first curster, currentPointer, size...
-	//DWORD cluster = OPEN_FILES[handle].record->firstCluster;
-
-	//get the cluster
-	//read_cluster(cluster, bufffer); //DWORD data_cluster, BYTE *buffer
-
-
+	if(read_clusters(handle, buffer, size) == -1){
+		return -1; //problem reading
+	}
+	return strlen(buffer); //NUMBER OF BYTES
 	/*Fun��o:	Realiza a leitura de "size" bytes do arquivo identificado por "handle".
 		Os bytes lidos s�o colocados na �rea apontada por "buffer".
 		Ap�s a leitura, o contador de posi��o (current pointer) deve ser ajustado para o byte seguinte ao �ltimo lido.
@@ -344,7 +336,6 @@ int read2 (FILE2 handle, char *buffer, int size){
 	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o n�mero de bytes lidos.
 		Se o valor retornado for menor do que "size", ent�o o contador de posi��o atingiu o final do arquivo.
 		Em caso de erro, ser� retornado um valor negativo.*/
-	return -1;
 }
 
 //TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT

@@ -87,55 +87,6 @@ void debugStructures(){
   }
 }
 
-int read_clusters(FILE2 handle, char *buffer, int size){
-	printf("\n\ncurrent pointer %08x\n", OPEN_FILES[handle].currentPointer);
-	printf("number of bytes in a cluster %08x\n", SECTOR_SIZE*partitionInfo->SectorsPerCluster);
-	printf("file size %08x\n", OPEN_FILES[handle].record->bytesFileSize);
-	printf("buffer size: %08x\n", size);
-
-	DWORD *clusters = (DWORD*)malloc(sizeof(DWORD)*FATtotalSize); //file clusters list
-	if(getFileClusters(OPEN_FILES[handle].record->firstCluster, clusters) != 0){
-		return -1;
-	}
-	int i = 0;
-	while(clusters[i] != EOF_FAT){
-		printf("file cluster %d is the cluster %08x\n", i, clusters[i]);
-		i++;
-	}
-	int first = findPointerCluster(OPEN_FILES[handle].currentPointer); //where do I start
-	printf("pointer is at the cluster of index %d\n", first);
-
-	int clusters_number = size2clusterNumber(size); //how many clusters I am going to read
-	printf("how many clusters I am going to read: %d\n", clusters_number);
-	if(clusters_number == 0){
-		return -1; //problem
-	}
-	int clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
-
-
-	DWORD position = getPointerPositionInCluster(OPEN_FILES[handle].currentPointer);
-	printf("where in the first cluster I start: %08x\n", position);
-
-	BYTE *chop = (BYTE *)malloc(clusterSize);
-	i = first;
-	while(clusters_number > 0){ //while I have something to read
-		printf("reading the cluster index %d which is %08x\n", i, clusters[i]);
-		if(read_cluster(clusters[i],chop) != 0){
-			return -1; //problem reading
-		}
-		if(position != 0){
-
-		}else{
-			
-		}
-		//do something with the chop
-		clusters_number--;
-		i++;
-	}
-
-	return -1;
-}
-
 int findEntryInDirectory(RECORD *dir, char *entry_name, BYTE type){
 	int i = 2;
 	while(i < DIRsize){
@@ -425,6 +376,82 @@ int read_cluster(DWORD data_cluster, BYTE *buffer){ //this function iterates to 
 		buffer = buffer + SECTOR_SIZE;//iterar o buffer
 		firstSector = firstSector + 1; //go to the next sector
 	}
+	return 0;
+}
+
+int read_clusters(FILE2 handle, char *buffer, int size){
+	/*printf("\n\ncurrent pointer %08x\n", OPEN_FILES[handle].currentPointer);
+	printf("handle: %d\n", handle);
+	printf("number of bytes in a cluster %08x\n", SECTOR_SIZE*partitionInfo->SectorsPerCluster);
+	printf("file size %08x\n", OPEN_FILES[handle].record->bytesFileSize);
+	printf("buffer size: %08x\n", size);*/
+	DWORD *clusters = (DWORD*)malloc(sizeof(DWORD)*FATtotalSize); //file clusters list
+	if(getFileClusters(OPEN_FILES[handle].record->firstCluster, clusters) != 0){
+		return -1;
+	}
+	/*int i = 0;
+	while(clusters[i] != EOF_FAT){
+		printf("file cluster %d is the cluster %08x\n", i, clusters[i]);
+		i++;
+	}*/
+	int first = findPointerCluster(OPEN_FILES[handle].currentPointer); //where do I start
+	//printf("pointer is at the cluster of index %d\n", first);
+	int clusters_number = size2clusterNumber(size); //how many clusters I am going to read
+	//printf("how many clusters I am going to read: %d\n", clusters_number);
+	if(clusters_number == 0){
+		return -1; //problem
+	}
+	int clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
+	DWORD position = getPointerPositionInCluster(OPEN_FILES[handle].currentPointer);
+	//printf("where in the first cluster I start: %08x\n", position);
+
+	BYTE *chop = (BYTE *)malloc(clusterSize);
+	int i = first;
+	int size_left = size; //HERE I SHOULD ARRANGE THE FILE SIZE
+	char *safe_buffer = buffer;
+
+	DWORD remain_size = OPEN_FILES[handle].record->bytesFileSize - position;
+	if(remain_size < size_left){ //if the file is smaller than the chop we want to read
+			size_left = remain_size;
+	}
+
+	while(clusters_number > 0){ //while I have something to read
+		//printf("reading the cluster index %d which is %08x\n", i, clusters[i]);
+		if(read_cluster(clusters[i],chop) != 0){
+			return -1; //problem reading
+		}
+		//printf("cluster :\n");
+		//printf("%s.\n.\n", chop);
+		//printf("size %08x\n", size_left);
+		if(position != 0){ //read from the middle
+			chop = chop + sizeof(BYTE)*position; //skip first part
+			DWORD size_c = clusterSize - position;
+			//printf("size left: %08x, %08x\n", size_left, size_c);
+			if(size_left < size_c){
+				size_c = size_left;
+			}
+			//printf("size left: %08x, %08x\n", size_left, size_c);
+			memcpy(buffer, chop, size_c); //memcpy
+			buffer = buffer + sizeof(BYTE)*size_c;
+		}else{ //read from beginning
+			if(size_left < clusterSize){
+				memcpy(buffer, chop, size_left);
+				buffer = buffer + sizeof(BYTE)*size_left;
+			}else{
+				size_left = size_left - clusterSize;
+				memcpy(buffer, chop, clusterSize);
+				buffer = buffer + sizeof(BYTE)*clusterSize;
+			}
+		}
+		//do something with the chop
+		clusters_number--;
+		i++;
+	}
+	//printf("out of loop\n");
+	buffer = safe_buffer;
+	//printf("%s\n", buffer);
+	//printf("passed from reading\n");
+	//printf("How much I read: %08x\n", strlen(buffer));
 	return 0;
 }
 
