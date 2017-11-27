@@ -546,6 +546,37 @@ int size2clusterNumber(int size){
 	return -1;
 }
 
+int shrink(int handle){
+	DWORD new_last_cluster = findPointerCluster(OPEN_FILES[handle].currentPointer); //where do I start
+	DWORD new_size = getPointerPositionInCluster(OPEN_FILES[handle].currentPointer); //where do I start inside first
+	DWORD *clusters = (DWORD*)malloc(sizeof(DWORD)*FATtotalSize); //get the file clusters list
+	if(getFileClusters(OPEN_FILES[handle].record->firstCluster, clusters) != 0){
+		return -1;
+	}
+	int size = sizeof(clusters) / sizeof(DWORD);
+	int i =0;
+	while(i < size){
+		if(clusters[i] == new_last_cluster){
+			FAT[clusters[i]] = EOF_FAT;
+			if((FAT[clusters[i]] == ERROR_FAT)||(FAT[clusters[i]] == FREE_FAT)){
+				return -1;
+			}else{
+				break;
+				i++;
+			}
+		}
+		i++;
+	}
+	if(free_cluster(clusters[i]) != 0){ //free all the list before the new EOF_FAT
+		return -1;
+	}
+	OPEN_FILES[handle].record->bytesFileSize = new_size;
+	if(updateDirectoryonDisk(handle) == -1){
+		return -1;
+	}
+	return 0;
+}
+
 int structures_init(){ //this function tests if the superblock and fat were already initialized
 	if(partitionInfoInitialized < 0){ //if it was not yet read
 		if(readSuperBlock() != 0){ //if tries to read and fails

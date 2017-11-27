@@ -53,6 +53,7 @@ int readSuperBlock();
 DWORD searchEntryPerName(RECORD* dir, char *name, BYTE type);
 DWORD set_cluster(DWORD i);
 int size2clusterNumber(int size);
+int shrink(int handle);
 int structures_init();
 int updateDirectoryonDisk(int handle);
 void wipeFromDirectory(RECORD *dir, char *name, BYTE type);

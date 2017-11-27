@@ -1,6 +1,6 @@
 /*
 
-ESSE É UM TESTE DA FUNÇÃO WRITE2 E READ2, QUE TAMBÉM UTILIZA CREATE2, DELETE2 E SEEK2
+ESSE É UM TESTE DA FUNÇÃO WRITE2, TRUNCATE2 E READ2, QUE TAMBÉM UTILIZA CREATE2, DELETE2 E SEEK2
 
 */
 #include <stdio.h>
@@ -12,7 +12,6 @@ ESSE É UM TESTE DA FUNÇÃO WRITE2 E READ2, QUE TAMBÉM UTILIZA CREATE2, DELETE
 
 int main(){
   char *file = "file_bonito.txt\0";
-  delete2(file);
   printf("STARTING BY OPENING THE FILE %s\n", file);
   int handle = create2(file);
   if(handle == -1){
@@ -69,8 +68,19 @@ int main(){
     buffer6[size4] = '\0';
     //printf("BUFFER SIZE %08x\n", size4);
     printf("INSIDE OUR BUFFER WE HAVE: %s\n", buffer6);
-    if(ret == 0){
-      printf("IT'S LIKE MAGIC!\n TEST COMPLETE!\n");
+    size = size + 1;
+    seek2(handle,size);
+    printf("NOW I WILL TRUNCATE THE FILE, CUTTING EVERYTHING AFTER MY \\o/ GUY\n");
+    ret = truncate(handle);
+    seek2(handle,0);
+    char *buffer7 = (char *)malloc(sizeof(char)*size);
+    //printf("I AM ASKING TO READ %08x BYTES FROM FILE\n", size);
+    ret = read2(handle, buffer7,size);
+    printf("READ RETURN: %08x\n", ret);
+    printf("INSIDE OUR BUFFER WE HAVE: %s\n", buffer7);
+    delete2(file);
+    if(ret != -1){
+      printf("SUCCESS!\n TEST COMPLETE!\n");
     }
   }
   return 0;
