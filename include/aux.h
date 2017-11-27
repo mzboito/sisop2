@@ -55,7 +55,8 @@ DWORD set_cluster(DWORD i);
 int size2clusterNumber(int size);
 int structures_init();
 void wipeFromDirectory(RECORD *dir, char *name, BYTE type);
-int write_cluster();
+int write_cluster(DWORD data_cluster, BYTE *buffer);
+int write_clusters(FILE2 handle, char *buffer, int size);
 int write_DIR(RECORD *dir);
 int write_FAT();
 

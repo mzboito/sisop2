@@ -454,7 +454,7 @@ int read_clusters(FILE2 handle, char *buffer, int size){
 	//printf("pointer is at the cluster of index %d\n", first);
 	int clusters_number = size2clusterNumber(size); //how many clusters I am going to read
 	//printf("how many clusters I am going to read: %d\n", clusters_number);
-	if(clusters_number == 0){
+	if(clusters_number < 0){
 		return -1; //problem
 	}
 	int clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
@@ -606,6 +606,121 @@ int write_cluster(DWORD data_cluster, BYTE *buffer){
 		firstSector = firstSector + 1; //go to the next sector
 	}
 	return 0;
+}
+
+int write_clusters(FILE2 handle, char *buffer, int size){
+	/*printf("\n\ncurrent pointer %08x\n", OPEN_FILES[handle].currentPointer);
+	printf("handle: %d\n", handle);
+	printf("number of bytes in a cluster %08x\n", SECTOR_SIZE*partitionInfo->SectorsPerCluster);
+	printf("file size %08x\n", OPEN_FILES[handle].record->bytesFileSize);
+	printf("buffer size: %08x\n", size);
+	*/
+	int first = findPointerCluster(OPEN_FILES[handle].currentPointer); //where do I start
+	//printf("pointer is at the cluster of index %d\n", first);
+	DWORD position = getPointerPositionInCluster(OPEN_FILES[handle].currentPointer); //where do I start inside first
+	//printf("where in the first cluster I start: %08x\n", position);
+	int clusters_number = size2clusterNumber(size); //how many clusters I am going to write
+	//printf("how many clusters I am going to write: %d\n", clusters_number);
+	if(clusters_number < 0){
+		return -1; //problem
+	}
+	DWORD *clusters = (DWORD*)malloc(sizeof(DWORD)*FATtotalSize); //get the file clusters list
+	if(getFileClusters(OPEN_FILES[handle].record->firstCluster, clusters) != 0){
+		return -1;
+	}
+
+	int clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
+	char *chop = (char *)malloc(clusterSize);
+	char *intermediate = (char *)malloc(clusterSize);
+	int i = first; //clusters index
+	int size_left = size;
+	int file_size = OPEN_FILES[handle].record->bytesFileSize;
+	//char *safe_buffer = buffer; //save the buffer (not sure if I need it?)
+	while(clusters_number > 0){ //while I have a cluster to write
+		if(read_cluster(clusters[i],(BYTE *)chop) != 0){
+			return -1; //problem reading
+		}
+		if(position != 0){ //I will start from the middle
+			strncpy(intermediate, chop, sizeof(BYTE)*position); //copy until the point we don't change
+			if(size_left > clusterSize){ //if the remain is from the buffer
+				strncpy(intermediate, buffer, clusterSize - position);
+				buffer = buffer + clusterSize - position;
+				size_left = size_left - clusterSize;
+			}else{
+				if(size_left < file_size){
+					strncpy(intermediate, buffer,size_left); //copies the entire buffer
+					strncpy(intermediate, chop,file_size - size_left); //copies the entire buffer
+				}else{
+					strncpy(intermediate, buffer,size_left); //copies the entire buffer
+					//strncpy(intermediate, chop, clusterSize - position - size_left); //and the last part
+				}
+				buffer = buffer + size_left;
+				size_left = 0;
+			}
+			if(write_cluster(clusters[i], (BYTE *)intermediate)!= 0){
+				return -1;
+			}
+		}else{
+			if(size_left > clusterSize){
+				if(write_cluster(clusters[i], (BYTE *)buffer)!=0){
+					return -1;
+				}
+				buffer = buffer + clusterSize;
+				size_left = size_left - clusterSize;
+			}else{
+				if(size_left < file_size){
+					strncpy(intermediate, buffer, size_left);
+					strncpy(intermediate, chop, file_size - size_left);
+				}else{
+					strncpy(intermediate, buffer, size_left);
+				}
+				buffer = buffer + size_left;
+				size_left = 0;
+			}
+			if(write_cluster(clusters[i], (BYTE *)intermediate)!= 0){
+				return -1;
+			}
+		}
+		i++;
+		clusters_number--;
+		file_size = file_size - clusterSize;
+	}
+	if(size_left > 0){ //we need to add a cluster to the file
+		clusters_number = size2clusterNumber(size_left);
+		while(clusters_number > 0){
+			DWORD cluster = findFreeCluster();
+			if(cluster == EOF_FAT){ //FULL FAT
+				return -1;
+			}
+			if(set_cluster(cluster) != 0){ //allocates new cluster
+				return -1; //allocation problem
+			}
+			if(write_cluster(cluster, (BYTE *)buffer) != 0){
+				return -1;
+			}
+			clusters_number--;
+		}
+	}
+	/*para escrever:
+pegar em que cluster eu começo eu começo
+onde nesse cluster eu começo
+quantos cluster eu escrevo
+
+fazer:
+ler o bloco e carregar em chop
+se nao é escrever o bloco inteiro, faz um strcpy
+ajusta um novo chop com a info que a gente quer
+escreve o bloco
+ajusta o buffer pro próximo cluster
+se saiu do while e size diferente de zero
+procura free entry na fat
+aloca
+escreve
+escreve bloco
+novo pointer = ultima posicao
+tamanho do arquivo = size - (size - pointer) + bytes wrote
+*/
+	return -1;
 }
 
 int write_DIR(RECORD *dir){

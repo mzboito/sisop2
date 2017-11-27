@@ -214,18 +214,24 @@ int write2 (FILE2 handle, char *buffer, int size){
 	if(size < 0){
 		return -1;
 	}
-
-
-	/*
-	if(read_clusters(handle, buffer, size) == -1){
+	if(write_clusters(handle, buffer, size) == -1){
 		return -1; //problem reading
 	}
+	/*Fun��o:	Realiza a escrita de "size" bytes no arquivo identificado por "handle".
+		Os bytes a serem escritos est�o na �rea apontada por "buffer".
+		Ap�s a escrita, o contador de posi��o (current pointer) deve ser ajustado para o byte seguinte ao �ltimo escrito.
+
+	Entra:	handle -> identificador do arquivo a ser escrito
+		buffer -> buffer de onde pegar os bytes a serem escritos no arquivo
+		size -> n�mero de bytes a serem escritos
+
+	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o n�mero de bytes efetivamente escritos.
+		Em caso de erro, ser� retornado um valor negativo.*/
+
 	int amount = strlen(buffer);
-	//update_handle(handle, amount);
 	//update current pointer
 	OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].currentPointer + amount;
-	return amount;*/
-	return -1;
+	return amount;
 }
 
 //truncate2 place
