@@ -54,6 +54,7 @@ DWORD searchEntryPerName(RECORD* dir, char *name, BYTE type);
 DWORD set_cluster(DWORD i);
 int size2clusterNumber(int size);
 int structures_init();
+int updateDirectoryonDisk(int handle);
 void wipeFromDirectory(RECORD *dir, char *name, BYTE type);
 int write_cluster(DWORD data_cluster, BYTE *buffer);
 int write_clusters(FILE2 handle, char *buffer, int size);

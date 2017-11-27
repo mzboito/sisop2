@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../include/aux.h"
@@ -47,7 +46,6 @@ FILE2 create2(char *filename){
 	position = findFreeDirEntry(target_dir); //search for a free entry
 	//printf("position: %d\n", position);
 	if(position == -1){
-
 		return -1; //full directory
 	}
 	//PROCURAR UMA ENTRADA DA FAT
@@ -191,13 +189,14 @@ int read2 (FILE2 handle, char *buffer, int size){
 	if(size < 0){
 		return -1;
 	}
-	//ADD IF FOR CASE WHERE WE DID SEEK2(-1) BEFORE
-
-	if(read_clusters(handle, buffer, size) == -1){
+	if(OPEN_FILES[handle].currentPointer == OPEN_FILES[handle].record->bytesFileSize){ //seek(-1)
+		return -1;
+	}
+	int amount = read_clusters(handle, buffer, size);
+	if(amount == -1){
 		return -1; //problem reading
 	}
-	int amount = strlen(buffer);
-	//update_handle(handle, amount);
+	//printf("I am a bad function and I don't come back from read_clusters :( \n");
 	//update current pointer
 	OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].currentPointer + amount;
 	return amount; //NUMBER OF BYTES
@@ -213,31 +212,24 @@ int write2 (FILE2 handle, char *buffer, int size){
 	if(OPEN_FILES[handle].fileHandle == -1){ //if the position we have is not free
 		return -1; //file is not there??
 	}
-	if(size < 0){
+	if((size < 0)||(strlen(buffer) < size)){
 		return -1;
 	}
-	printf("Passed to write_clusters\n");
-	if(write_clusters(handle, buffer, size) == -1){
+	//printf("Passed to write_clusters\n");
+	int amount = write_clusters(handle, buffer, size);
+	if(amount == -1){
 		return -1; //problem reading
 	}
-	/*Fun��o:	Realiza a escrita de "size" bytes no arquivo identificado por "handle".
-		Os bytes a serem escritos est�o na �rea apontada por "buffer".
-		Ap�s a escrita, o contador de posi��o (current pointer) deve ser ajustado para o byte seguinte ao �ltimo escrito.
-
-	Entra:	handle -> identificador do arquivo a ser escrito
-		buffer -> buffer de onde pegar os bytes a serem escritos no arquivo
-		size -> n�mero de bytes a serem escritos
-
-	Sa�da:	Se a opera��o foi realizada com sucesso, a fun��o retorna o n�mero de bytes efetivamente escritos.
-		Em caso de erro, ser� retornado um valor negativo.*/
-
-	int amount = strlen(buffer);
 	//update current pointer
 	OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].currentPointer + amount;
+	//printf("ready to return\n");
 	return amount;
 }
 
-//truncate2 place
+int truncate2 (FILE2 handle){
+
+	return -1;
+}
 
 int seek2 (FILE2 handle, unsigned int offset){
 	if(structures_init()!= 0){ //first we need to test if the superblock was initialized
@@ -445,6 +437,7 @@ int readdir2 (DIR2 handle,DIRENT2 *dentry){
 	if(OPEN_DIRS[handle].currentPointer == DIRsize){ //end of the directory
 		return -END_OF_DIR;
 	}
+
 	RECORD *dir = OPEN_DIRS[handle].record;
 	DWORD pointer = OPEN_DIRS[handle].currentPointer;
 	if(dir[pointer].TypeVal == TYPEVAL_INVALIDO){
@@ -470,9 +463,4 @@ int closedir2 (DIR2 handle){
 	OPEN_DIRS[handle].dirHandle = -1;
 	nOpenDirs--;
 	return 0;
-}
-
-//TODO IMPLEMENT EVERYTHING BELLOW THIS COMMENT
-int truncate2 (FILE2 handle){
-	return -1;
 }
