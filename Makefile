@@ -1,12 +1,4 @@
-#
-# Makefile ESQUELETO
-#
-# DEVE ter uma regra "all" para geração da biblioteca
-# regra "clean" para remover todos os objetos gerados.
-#
-# NECESSARIO adaptar este esqueleto de makefile para suas necessidades.
-#
-#
+
 
 CC=gcc
 LIB_DIR=./lib
@@ -15,9 +7,10 @@ BIN_DIR=./bin
 SRC_DIR=./src
 
 all:
-	gcc -c src/utils.c -o bin/utils.o -Wall
-	gcc -c src/aux.c -o bin/aux.o -Wall
-	gcc -c src/t2fs.c -o bin/t2fs.o -Wall
+	gcc -c $(SRC_DIR)/t2fs.c -o $(LIB_DIR)/t2fs.o -Wall
+	gcc -c $(SRC_DIR)/aux.c -o $(LIB_DIR)/aux.o -Wall
+	gcc -c $(SRC_DIR)/utils.c -o $(LIB_DIR)/utils.o -Wall
+	ar crs $(LIB_DIR)/libt2fs.a $(LIB_DIR)/utils.o $(LIB_DIR)/t2fs.o $(LIB_DIR)/aux.o $(LIB_DIR)/apidisk.o
 
 clean:
-	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/t2fs.o $(BIN_DIR)/aux.o $(BIN_DIR)/utils.o $ $(SRC_DIR)/*~ $(INC_DIR)/*~ *~
+	rm -rf $(LIB_DIR)/*.a $(LIB_DIR)/t2fs.o $(LIB_DIR)/aux.o $(LIB_DIR)/utils.o

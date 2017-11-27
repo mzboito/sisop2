@@ -30,9 +30,9 @@ int main(){
     printf_OPEN_FILES(10);
     printf("TESTING SEEK -1\n");
     seek2(handle, -1);
-    printf("The size of %s is %08x bytes, so this >%08x< should be %08x + 1\n",
+    printf("The size of %s is %08x bytes, so this >%08x< should have the same value\n",
       file1, OPEN_FILES[handle].record->bytesFileSize, OPEN_FILES[handle].currentPointer, OPEN_FILES[handle].record->bytesFileSize);
-    if(OPEN_FILES[handle].currentPointer == (OPEN_FILES[handle].record->bytesFileSize + 1)){
+    if(OPEN_FILES[handle].currentPointer == (OPEN_FILES[handle].record->bytesFileSize)){
       printf("AND IT IS!\n TEST COMPLETE! :)\n");
     }else{
       printf("BUT IT IS NOT!\n SOMETHING WENT WRONG! :(\n");

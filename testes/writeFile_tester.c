@@ -71,7 +71,7 @@ int main(){
     size = size + 1;
     seek2(handle,size);
     printf("NOW I WILL TRUNCATE THE FILE, CUTTING EVERYTHING AFTER MY \\o/ GUY\n");
-    ret = truncate(handle);
+    ret = truncate2(handle);
     seek2(handle,0);
     char *buffer7 = (char *)malloc(sizeof(char)*size);
     //printf("I AM ASKING TO READ %08x BYTES FROM FILE\n", size);
