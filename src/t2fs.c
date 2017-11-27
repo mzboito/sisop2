@@ -247,7 +247,7 @@ int seek2 (FILE2 handle, unsigned int offset){
 		return -1; //file is not there??
 	}
 	if(offset == -1){
-		OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE);
+		OPEN_FILES[handle].currentPointer = OPEN_FILES[handle].record->bytesFileSize;// + sizeof(BYTE);
 		//printf("%08x\n", OPEN_FILES[handle].record->bytesFileSize + sizeof(BYTE));
 	}else{
 		if(offset <= OPEN_FILES[handle].record->bytesFileSize){
