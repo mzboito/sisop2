@@ -1,5 +1,3 @@
-
-
 CC=gcc
 LIB_DIR=./lib
 INC_DIR=./include
