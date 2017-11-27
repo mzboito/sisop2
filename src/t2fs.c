@@ -191,6 +191,8 @@ int read2 (FILE2 handle, char *buffer, int size){
 	if(size < 0){
 		return -1;
 	}
+	//ADD IF FOR CASE WHERE WE DID SEEK2(-1) BEFORE
+
 	if(read_clusters(handle, buffer, size) == -1){
 		return -1; //problem reading
 	}
@@ -214,6 +216,7 @@ int write2 (FILE2 handle, char *buffer, int size){
 	if(size < 0){
 		return -1;
 	}
+	printf("Passed to write_clusters\n");
 	if(write_clusters(handle, buffer, size) == -1){
 		return -1; //problem reading
 	}

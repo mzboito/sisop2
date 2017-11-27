@@ -29,6 +29,8 @@ all:
 	gcc -o openClosedir_tester $(BIN_DIR)/* openClosedir_tester.o
 	gcc -c getSetDirPath_tester.c -o getSetDirPath_tester.o
 	gcc -o getSetDirPath_tester $(BIN_DIR)/* getSetDirPath_tester.o
+	gcc -c writeFile_tester.c -o writeFile_tester.o
+	gcc -o writeFile_tester $(BIN_DIR)/* writeFile_tester.o
 
 clean:
 	rm *_tester

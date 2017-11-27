@@ -440,7 +440,8 @@ int read_clusters(FILE2 handle, char *buffer, int size){
 	printf("handle: %d\n", handle);
 	printf("number of bytes in a cluster %08x\n", SECTOR_SIZE*partitionInfo->SectorsPerCluster);
 	printf("file size %08x\n", OPEN_FILES[handle].record->bytesFileSize);
-	printf("buffer size: %08x\n", size);*/
+	printf("buffer size: %08x\n", size);
+	printf("buffer content: %s\n", buffer);*/
 	DWORD *clusters = (DWORD*)malloc(sizeof(DWORD)*FATtotalSize); //file clusters list
 	if(getFileClusters(OPEN_FILES[handle].record->firstCluster, clusters) != 0){
 		return -1;
@@ -461,7 +462,8 @@ int read_clusters(FILE2 handle, char *buffer, int size){
 	DWORD position = getPointerPositionInCluster(OPEN_FILES[handle].currentPointer);
 	//printf("where in the first cluster I start: %08x\n", position);
 
-	BYTE *chop = (BYTE *)malloc(clusterSize);
+	BYTE *chop = (BYTE *)malloc(sizeof(BYTE)*clusterSize);
+	//BYTE chop[clusterSize];
 	int i = first;
 	int size_left = size; //HERE I SHOULD ARRANGE THE FILE SIZE
 	char *safe_buffer = buffer;
@@ -609,12 +611,12 @@ int write_cluster(DWORD data_cluster, BYTE *buffer){
 }
 
 int write_clusters(FILE2 handle, char *buffer, int size){
-	/*printf("\n\ncurrent pointer %08x\n", OPEN_FILES[handle].currentPointer);
+	printf("\n\ncurrent pointer %08x\n", OPEN_FILES[handle].currentPointer);
 	printf("handle: %d\n", handle);
 	printf("number of bytes in a cluster %08x\n", SECTOR_SIZE*partitionInfo->SectorsPerCluster);
 	printf("file size %08x\n", OPEN_FILES[handle].record->bytesFileSize);
 	printf("buffer size: %08x\n", size);
-	*/
+	printf("buffer content: %s\n", buffer);
 	int first = findPointerCluster(OPEN_FILES[handle].currentPointer); //where do I start
 	//printf("pointer is at the cluster of index %d\n", first);
 	DWORD position = getPointerPositionInCluster(OPEN_FILES[handle].currentPointer); //where do I start inside first
@@ -630,13 +632,17 @@ int write_clusters(FILE2 handle, char *buffer, int size){
 	}
 
 	int clusterSize = SECTOR_SIZE * partitionInfo->SectorsPerCluster;
-	char *chop = (char *)malloc(clusterSize);
-	char *intermediate = (char *)malloc(clusterSize);
+	printf("it is here\n");
+	char *chop = (char *)malloc(sizeof(BYTE)*clusterSize);
+	printf("definately\n");
+	char *intermediate = (char *)malloc(sizeof(BYTE)*clusterSize);
+	printf("or not\n");
 	int i = first; //clusters index
 	int size_left = size;
 	int file_size = OPEN_FILES[handle].record->bytesFileSize;
 	//char *safe_buffer = buffer; //save the buffer (not sure if I need it?)
 	while(clusters_number > 0){ //while I have a cluster to write
+		printf("aqui?\n");
 		if(read_cluster(clusters[i],(BYTE *)chop) != 0){
 			return -1; //problem reading
 		}
@@ -661,6 +667,7 @@ int write_clusters(FILE2 handle, char *buffer, int size){
 				return -1;
 			}
 		}else{
+			//printf("vai entrar aqui\n");
 			if(size_left > clusterSize){
 				if(write_cluster(clusters[i], (BYTE *)buffer)!=0){
 					return -1;
@@ -672,8 +679,10 @@ int write_clusters(FILE2 handle, char *buffer, int size){
 					strncpy(intermediate, buffer, size_left);
 					strncpy(intermediate, chop, file_size - size_left);
 				}else{
+					//printf("e aqui pq o size é maior\n");
 					strncpy(intermediate, buffer, size_left);
 				}
+				//printf("vai fazer a operação com o buffer\n");
 				buffer = buffer + size_left;
 				size_left = 0;
 			}
@@ -685,6 +694,7 @@ int write_clusters(FILE2 handle, char *buffer, int size){
 		clusters_number--;
 		file_size = file_size - clusterSize;
 	}
+	printf("aqui não\n");
 	if(size_left > 0){ //we need to add a cluster to the file
 		clusters_number = size2clusterNumber(size_left);
 		while(clusters_number > 0){
