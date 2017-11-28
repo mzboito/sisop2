@@ -41,7 +41,7 @@ int main(){
   printf("content inside buffer:\n%s\n", buffer);
 
   position = 0;
-  printf(".\n\nASKING TO READ %08x BYTES FROM POSITION 0\n", 1025, position);
+  printf(".\n\nASKING TO READ %08x BYTES FROM POSITION %08x\n", 1025, position);
   seek2(handle, 0);
   size = read2(handle, buffer, 1025);
   printf("NUMBER OF BYTES READ: %08x\n", size);

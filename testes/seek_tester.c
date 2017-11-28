@@ -31,7 +31,7 @@ int main(){
     printf("TESTING SEEK -1\n");
     seek2(handle, -1);
     printf("The size of %s is %08x bytes, so this >%08x< should have the same value\n",
-      file1, OPEN_FILES[handle].record->bytesFileSize, OPEN_FILES[handle].currentPointer, OPEN_FILES[handle].record->bytesFileSize);
+      file1, OPEN_FILES[handle].record->bytesFileSize, OPEN_FILES[handle].currentPointer);
     if(OPEN_FILES[handle].currentPointer == (OPEN_FILES[handle].record->bytesFileSize)){
       printf("AND IT IS!\n TEST COMPLETE! :)\n");
     }else{
