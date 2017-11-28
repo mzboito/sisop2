@@ -567,12 +567,14 @@ int shrink(int handle){
 		}
 		i++;
 	}
-	if(free_cluster(clusters[i]) != 0){ //free all the list before the new EOF_FAT
-		return -1;
-	}
-	OPEN_FILES[handle].record->bytesFileSize = new_size;
-	if(updateDirectoryonDisk(handle) == -1){
-		return -1;
+	if(i < size){ //if you need to delete clusters
+		if(free_cluster(clusters[i]) != 0){ //free all the list before the new EOF_FAT
+			return -1;
+		}
+		OPEN_FILES[handle].record->bytesFileSize = new_size;
+		if(updateDirectoryonDisk(handle) == -1){
+			return -1;
+		}
 	}
 	return 0;
 }
